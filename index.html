@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <img src="JC Hair Studio Logo Black.png" alt="JC Hair Studio Logo" width="438.8" height="212.4" class="center">
+            <style>
+                .center {
+                    display: block;
+                    margin-left: auto;
+                    margin-right: auto;
+                    margin-top: 70px;
+                    margin-bottom: 100px;
+                }
+                .navbar {
+                    display: block;
+                    background-color: #f2f2f2;
+                    overflow: hidden;
+                    bottom: 0;
+                    width: 100%;
+                    border-top: 1px solid #e4e4e4;
+                }
+                .navbar a {
+                    float: left;
+                    display: block;
+                    color: rgba(0, 0, 0, 0.54);
+                    text-align: center;
+                    padding: 14px 16px;
+                    text-decoration: none;
+                    font-size: 17px;
+                }
+                .navbar a:hover {
+                    color: black;
+                }
+                .imgslider {
+                    width:100%;
+                    object-fit: scale-down;
+                    background-color: #202020;
+                }
+                p1 {
+                    font-family: sans-serif;
+                }
+                
+                
+                * {box-sizing: border-box}
+body {font-family: fantasy, sans-serif; margin:0}
+.mySlides {display: none;}
+img {vertical-align: middle;}
+
+/* Slideshow container */
+.slideshow-container {
+  max-width: 1000px;
+  position: relative;
+  margin: auto;
+}
+
+/* Next & previous buttons */
+.prev, .next {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  width: auto;
+  padding: 16px;
+  margin-top: -22px;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  transition: 0.6s ease;
+  border-radius: 0 3px 3px 0;
+  user-select: none;
+}
+
+/* Position the "next button" to the right */
+.next {
+  right: 0;
+  border-radius: 3px 0 0 3px;
+}
+
+/* On hover, add a black background color with a little bit see-through */
+.prev:hover, .next:hover {
+  background-color: rgba(0,0,0,0.8);
+}
+
+/* Caption text */
+.text {
+  color: #f2f2f2;
+  font-size: 15px;
+  padding: 8px 12px;
+  position: absolute;
+  bottom: 8px;
+  width: 100%;
+  text-align: center;
+}
+
+/* The dots/bullets/indicators */
+.dot {
+  cursor: pointer;
+  height: 15px;
+  width: 15px;
+  margin: 0 2px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+  transition: background-color 0.6s ease;
+}
+
+.active, .dot:hover {
+  background-color: #717171;
+}
+
+/* Fading animation */
+.fade {
+  -webkit-animation-name: fade;
+  -webkit-animation-duration: 1.5s;
+  animation-name: fade;
+  animation-duration: 1.5s;
+}
+
+@-webkit-keyframes fade {
+  from {opacity: .4} 
+  to {opacity: 1}
+}
+
+@keyframes fade {
+  from {opacity: .4} 
+  to {opacity: 1}
+}
+
+/* On smaller screens, decrease text size */
+@media only screen and (max-width: 300px) {
+  .prev, .next,.text {font-size: 11px}
+}
+        </style>
+    </head>
+    <body>
+        <div class="slideshow-container">
+
+<div class="mySlides fade">
+  <img src="image1.jpg" class="imgslider" height="500">
+  <div class="text">Joel Cheong Hair Studio</div>
+</div>
+
+<div class="mySlides fade">
+  <img src="image2.jpg" class="imgslider" height="500">
+  <div class="text">Finished haircut</div>
+</div>
+
+<div class="mySlides fade">
+  <img src="image3.jpg" class="imgslider" height="500">
+  <div class="text">Unique Christmas!</div>
+</div>
+
+<a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+<a class="next" onclick="plusSlides(1)">&#10095;</a>
+
+</div>
+<br>
+
+<div style="text-align:center">
+  <span class="dot" onclick="currentSlide(1)"></span> 
+  <span class="dot" onclick="currentSlide(2)"></span> 
+  <span class="dot" onclick="currentSlide(3)"></span> 
+</div>
+
+<script>
+var slideIndex = 1;
+showSlides(slideIndex);
+
+function plusSlides(n) {
+  showSlides(slideIndex += n);
+}
+
+function currentSlide(n) {
+  showSlides(slideIndex = n);
+}
+
+function showSlides(n) {
+  var i;
+  var slides = document.getElementsByClassName("mySlides");
+  var dots = document.getElementsByClassName("dot");
+  if (n > slides.length) {slideIndex = 1}    
+  if (n < 1) {slideIndex = slides.length}
+  for (i = 0; i < slides.length; i++) {
+      slides[i].style.display = "none";  
+  }
+  for (i = 0; i < dots.length; i++) {
+      dots[i].className = dots[i].className.replace(" active", "");
+  }
+  slides[slideIndex-1].style.display = "block";  
+  dots[slideIndex-1].className += " active";
+}
+</script>
+    </body>
+    <p3 style="display: block; margin-top: 100px; font-size:40px; text-align: center;">✂About us ✂</p3>
+            <p2 style="font-family: candara, microsoft yahei; font-size: 20px; display: block; max-width: 700px; margin-left: auto; margin-right: auto;">
+            <br/><br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            Jôel Cheong Hair Studio is a professional hair studio founded by Joel Cheong in 2019. Designer Joel Cheong has more than 9 years of perm experience and has served as a perm tutor for many salons in Malaysia.<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            "People First" is the founding philosophy of Jôel Cheong Hair Studio. The health of your hair is always our top priority. In order to prevent damage to your hair, each of our dye/perm services comes with customized repair work to restore its moisture as well as to ensure hair remains unscathed and unaffected by any hair products or chemical works.<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            Whether you are pursuing a bold haircut, trendy look, retro elegance or still in the search for one that suits you best, we are here to break through the general public's definition of "beauty" with you and create a bespoke style for you.<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            We are breaking the general stereotype of a hair salon, and we invite you to discover and experience how different we are from the norm.<br/><br/><br/><br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            Jôel Cheong Hair Studio 创立于2019年，是一家专业的造型工作室，由我们的造型师Joel Cheong所创办。设计师Joel Cheong 不仅拥有9年多的烫发经验，更曾担任多家发廊的烫发导师。<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            以人为核心，是 Jôel Cheong Hair Studio的创办理念。您的健康发质，是我们十分重视的事情。为了不让发质受损，我们所提供的每一套染/烫发服务都包括了秀发修护工作，让干枯毛躁的秀发恢复水润光泽，并且确保顾客的发质健康，不受任何化学处理及头发造型产品所影响。<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            不论您是追求大胆创意、蓬松飘逸、复古典雅、或者甚至还在寻找自我风格的顾客，我们愿意帮助您一起突破普罗大众对于「美」的定义，为你打造量身定做的风格。<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            打破社会对发廊的刻板印象，是Jôel Cheong Hair Studio 需要您一起发掘的新时尚。<br/><br/><br/><br/><br/><br/></p2>
+    <p1 class="navbar">
+        <a href="#contact" style="display: block; margin-left: 20px">Contact Us</a>
+    </p1>
+</html>
