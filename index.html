@@ -3,12 +3,11 @@
         <head>
             <title>Joel Cheong Hair Studio</title>
                     <script>
-                if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) )     
-{
-   var url = "mobile.html";    
-   $(location).attr('href',url);
-
-}
+                  if(!window.location.search.substring(1) == "full=true") { // do not redirect if querystring is ?full=true
+    if (navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/Android/i) || navigator.userAgent.match(/Blackberry/i) || navigator.userAgent.match(/WebOs/i)) { // detect mobile browser
+      window.location.replace("http://127.0.0.1:55623/mobile.html"); // redirect if mobile browser detected
+    }
+  }
             </script>
             <link rel="icon" href="JCicon.png" type="image/icon type">
             <meta name="viewport" content="width=device-width, initial-scale=1">
