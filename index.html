@@ -3,12 +3,10 @@
         <head>
             <title>Joel Cheong Hair Studio</title>
                     <script>
-                  if(!window.location.search.substring(1) == "full=true") { // do not redirect if querystring is ?full=true
-    if (navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/Android/i) || navigator.userAgent.match(/Blackberry/i) || navigator.userAgent.match(/WebOs/i)) { // detect mobile browser
-      window.location.replace("mobile.html"); // redirect if mobile browser detected
-    }
-  }
-            </script>
+if(window.innerWidth <= 800 && window.innerHeight <= 600) { // detect mobile browser
+  window.location.replace("mobile.html"); // redirect if mobile browser detected
+}
+</script>
             <link rel="icon" href="JCicon.png" type="image/icon type">
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <img src="JC Hair Studio Logo Black.png" alt="JC Hair Studio Logo" class="center" width="438.8">
