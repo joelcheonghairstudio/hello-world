@@ -187,6 +187,8 @@ img {vertical-align: middle;}
 var slideIndex = 1;
 showSlides(slideIndex);
 
+var i = 1;
+
 function plusSlides(n) {
   showSlides(slideIndex += n);
 }
@@ -194,6 +196,21 @@ function plusSlides(n) {
 function currentSlide(n) {
   showSlides(slideIndex = n);
 }
+    
+function myLoop () {
+   setTimeout(function () {
+      if (slideIndex < 6) {
+                showSlides(slideIndex ++);
+         myLoop();
+      } else {
+           showSlides(slideIndex = 1);
+          myLoop();
+       }
+   }, 6000)
+}
+
+myLoop();
+
 
 function showSlides(n) {
   var i;
