@@ -1,2 +1,2 @@
-# joelcheonghairstudio/.github.io
+# joelcheonghairstudio.github.io
 Website
