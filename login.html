@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+
+<head>
+    <meta http-equiv="Permissions-Policy" content="interest-cohort=()">
+    <title>JCHS POS</title>
+    <style>
+        .alignCenter {
+            position: absolute;
+            top: 50%;
+            align-self: center;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .bold {
+            font-weight: bold;
+            font-size: 50px;
+        }
+
+        .pin {
+            font-size: 50px;
+            text-align: center;
+            width: 50px;
+            border-width: 0 0 2px;
+        }
+
+        .pin:focus {
+            border-width: 0 0 3px;
+            outline: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="alert"
+        style="position: absolute; top: 30px; align-self: center; left: 50%; transform: translate(-50%, 0%); text-align: center; padding: 10px; color: white;">
+    </div>
+    <form id="staffPin" class="alignCenter bold">
+        <label>Staff PIN</label>
+        <hr>
+        <input id="pin1" type="text" class="pin" minlength="1" maxlength="1" pattern="[0-9]{1}"
+            onkeydown="nextPin('pin1')" oninput="isNum('pin1')"></input>
+        <input id="pin2" type="text" class="pin" minlength="1" maxlength="1" pattern="[0-9]{1}"
+            onkeydown="nextPin('pin2')" oninput="isNum('pin2')"></input>
+        <input id="pin3" type="text" class="pin" minlength="1" maxlength="1" pattern="[0-9]{1}"
+            onkeydown="nextPin('pin3')" oninput="isNum('pin3')"></input>
+        <input id="pin4" type="text" class="pin" minlength="1" maxlength="1" pattern="[0-9]{1}"
+            onkeydown="nextPin('pin4')" oninput="isNum('pin4')"></input>
+        <br>
+        <button type="button" style="font-size: 20px; padding: 3px 10px 3px 10px;"
+            onclick="login(getId('pin1'), getId('pin2'), getId('pin3'), getId('pin4'))">
+            Log In</button>
+    </form>
+</body>
+<script>
+    //Start up
+    window.onload = function () {
+        //Clear session storage *temp
+        var user = JSON.parse(sessionStorage.getItem("user"));
+        if (user) {
+            alertFunc(user[1] + " is logged out.");
+            window.sessionStorage.removeItem("user");
+        }
+    }
+
+    //Alert function
+    var alertTimeout = 0;
+    function alertFunc(text, timeAdd = 0) {
+        document.getElementById('alert').innerHTML = text;
+        document.getElementById('alert').style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
+        if (alertTimeout <= 0) {
+            var alertTimeoutInterval = setInterval(() => {
+                alertTimeout -= 1;
+                if (alertTimeout <= 0) {
+                    document.getElementById('alert').innerHTML = '';
+                    document.getElementById('alert').style.backgroundColor = 'rgba(0, 0, 0, 0)';
+                    clearInterval(alertTimeoutInterval);
+                    alertTimeout = 0;
+                }
+            }, 1)
+        }
+        alertTimeout = 600 + timeAdd;
+    }
+    function getId(id) {
+        return document.getElementById(id).value;
+    }
+    function isNum(id) {
+        if (!(getId(id) >= 0 && getId(id) <= 9) || getId(id) == " ") {
+            document.getElementById(id).value = '';
+        }
+    }
+    function nextPin(id) {
+        var key = event.keyCode;
+        document.getElementById(id).selectionStart = 0;
+        document.getElementById(id).selectionEnd = 1;
+        switch (true) {
+            case (getId(id) && key >= 48 && key <= 57 && parseInt(id[3]) < 4):
+                id = "pin" + (parseInt(id[3]) + 1);
+                if (!getId(id)) {
+                    document.getElementById(id).focus();
+                } else {
+                    id = "pin" + (parseInt(id[3]) - 1);
+                }
+                break;
+            case (key == 37 && parseInt(id[3]) > 1) || (getId(id) == "" && key == 8 && parseInt(id[3]) > 1):
+                id = "pin" + (parseInt(id[3]) - 1);
+                document.getElementById(id).focus();
+                break;
+            case (key == 39 && parseInt(id[3]) < 4):
+                id = "pin" + (parseInt(id[3]) + 1);
+                document.getElementById(id).focus();
+                break;
+            case (key == 13):
+                login(getId('pin1'), getId('pin2'), getId('pin3'), getId('pin4'))
+                break;
+            default:
+                break;
+        }
+    }
+    function login(p1, p2, p3, p4) {
+        if (p1 && p2 && p3 && p4) {
+            var pin = p1 + p2 + p3 + p4;
+
+            for (let index = 0; index <= acc.length; index++) {
+                //const element = acc[index];
+                if (index < acc.length) {
+                    if (acc[index][0] == pin) {
+                        //Next page
+                        window.location.href = "main.html";
+                        //window.location.href = "main.html?user=" + acc[index];
+                        sessionStorage.setItem("user", JSON.stringify(acc[index]));
+                        break;
+                    }
+                }
+                if (index >= acc.length) {
+                    alertFunc("No such staff.");
+                }
+            }
+        } else {
+            alertFunc("Wrong format.");
+        }
+    }
+    function visible(id) {
+        var x = document.getElementById(id);
+        if (x.style.display === "none") {
+            x.style.display = "block";
+        } else {
+            x.style.display = "none";
+        }
+    }
+
+    //DATABASE
+    var acc = [["1541", "Low Kar Weng"], ["1777", "She"]];
+</script>
+
+</html>
