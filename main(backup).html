@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+
+<head>
+    <meta http-equiv="Permissions-Policy" content="interest-cohort=()">
+    <title>JCHS POS</title>
+    <link href="general.css" rel="stylesheet">
+    <style>
+        .categories {
+            padding: 0px 10px 0px 10px;
+            background-color: rgb(78, 78, 78);
+            height: calc(100% - 20px * 2);
+            vertical-align: top;
+            position: relative;
+            z-index: 0;
+            display: table-cell;
+        }
+
+        .category {
+            padding: 19.5px;
+            width: 80px;
+            height: 70px;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            color: white;
+            border-width: 0px 0px 1px 0px;
+            border-style: solid;
+            border-color: white;
+            display: flex;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        .services {
+            padding: 0px 10px 0px 10px;
+            display: table-cell;
+        }
+
+        .service {
+            background-color: orange;
+            margin: 10px;
+            padding: 10px 30px 10px 30px;
+            height: 70px;
+            width: 130px;
+            font-size: 30px;
+            color: white;
+            border-radius: 10px;
+            display: inline-block;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        .service:hover {
+            background-color: rgb(219, 143, 0);
+        }
+
+        .service:active {
+            background-color: rgb(180, 117, 0);
+        }
+
+        .scrollServ {
+            cursor: grab;
+            overflow-x: auto;
+            overflow-y: hidden;
+            width: 80vw;
+        }
+
+        .scrollServ::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="body" style="height: 100%; white-space: nowrap; display: table;">
+        <div id="categories" class="categories">
+        </div>
+        <div id="services" class="services">
+        </div>
+    </div>
+</body>
+<script>
+    //Start up
+    window.onload = function () {
+        var user = JSON.parse(sessionStorage.getItem("user"));
+        if (user == null) {
+            document.location.href = "login.html";
+        }
+        alertFunc("Welcome " + user[1] + ".");
+
+        var arrService = [
+            ["Hair", [["Hair Cut", 5], ["Wash Cut", 2.8], ["Color Hair", 100], ["Hair Cut", 5], ["Wash Cut", 2.8], ["Color Hair", 100]]],
+            ["Wash", [["Cut", 2], ["Wash", 2.7], ["Color ", 10], ["Cut", 2], ["Wash", 2.7], ["Color ", 10], ["Cut", 2], ["Wash", 2.7], ["Color ", 10]]],
+            ["Wash1", [["Cut", 2], ["Wash", 2.7], ["Color ", 10]]],
+            ["Wash2", [["Cut", 2], ["Wash", 2.7], ["Color ", 10]]],
+            ["Wash3", [["Cut", 2], ["Wash", 2.7], ["Color ", 10]]],
+            ["Wash4", [["Cut", 2], ["Wash", 2.7], ["Color ", 10]]],
+        ];
+
+        for (var category = 0; category < arrService.length; category++) {
+            document.getElementById('categories').innerHTML += `
+                <label class="category" id="${arrService[category][0]}_Parent">${arrService[category][0]}</label>
+            `
+            document.getElementById('services').innerHTML += `
+                <div id="${arrService[category][0]}_Child" class="scrollServ"></div>
+            `
+            for (var service = 0; service < arrService[category][1].length; service++) {
+                if (arrService[category][1][service][1] % 1 == 0)
+                    var strPrice = arrService[category][1][service][1].toString() + ".00";
+                else
+                    var strPrice = arrService[category][1][service][1].toString() + "0";
+                document.getElementById(arrService[category][0] + "_Child").innerHTML += `
+                    <label class="service" onclick="alert('Hi')">${arrService[category][1][service][0]}<br>RM ${strPrice}</label>
+                `
+            }
+        }
+    }
+</script>
+<script type="text/javascript" src="general.js"></script>
+
+</html>

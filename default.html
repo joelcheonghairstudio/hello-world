@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+
+<head>
+    <meta http-equiv="Permissions-Policy" content="interest-cohort=()">
+    <title>JCHS POS</title>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+        }
+
+        .menuSlot {
+            width: 50px;
+            height: 50px;
+            padding: 10px;
+        }
+
+        .active {
+            cursor: pointer;
+        }
+
+        .active:active {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .now {
+            width: 50px;
+            filter: invert(100%) drop-shadow(0px 0px 5px rgba(0, 0, 0, 0.363));
+        }
+
+        .detail {
+            position: absolute;
+            top: 18px;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+        }
+
+        .center {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 50%;
+        }
+
+        .stActive {
+            border-radius: 20px;
+            height: 20px;
+            width: 20px;
+            background-color: lightgreen;
+            transform: translate(-50%, -50%);
+        }
+
+        .stUnactive {
+            border-radius: 20px;
+            height: 20px;
+            width: 20px;
+            background-color: red;
+            transform: translate(-50%, -50%);
+        }
+
+        /* width */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        /* Track */
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+        }
+
+        /* Handle on hover */
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="main"
+        style="position: absolute; width: 90%; height: 85%; top: 50%; left: 50%; transform: translate(-46%, -48%); overflow: auto;">
+
+    </div>
+
+    <div id="menu"
+        style="width: 70px; height: 100vh; background-image: linear-gradient(rgb(240, 240, 240), lightgray); top: 50%; left: 1.9%; position: absolute; transform: translate(0%, -50%);">
+        <div style="top: 50%; position: relative; transform: translate(0%, -50%);">
+            <div class="menuSlot active">
+                <div style="height: 6px;"></div>
+                <div style="height: 8px; background-color: rgb(54, 54, 54); width: 50px;"></div>
+                <div style="height: 10px;"></div>
+                <div style="height: 8px; background-color: rgb(54, 54, 54); width: 50px;"></div>
+                <div style="height: 10px;"></div>
+                <div style="height: 8px; background-color: rgb(54, 54, 54); width: 50px;"></div>
+                <div style="height: 6px;"></div>
+            </div>
+            <div class="menuSlot">
+                <img src="png/home.png"
+                    style="width: 50px; filter: invert(100%) drop-shadow(0px 0px 5px rgba(0, 0, 0, 0.363));" />
+            </div>
+            <div class="menuSlot active">
+                <img src="png/attendance.png" style="width: 50px;" />
+            </div>
+            <div class="menuSlot">
+
+            </div>
+            <div class="menuSlot">
+
+            </div>
+            <div class="menuSlot">
+
+            </div>
+            <div class="menuSlot">
+
+            </div>
+            <div class="menuSlot">
+
+            </div>
+            <div class="menuSlot active" onclick="logout()">
+                <img src="png/logout.png" style="width: 50px;" />
+            </div>
+        </div>
+    </div>
+
+    <div id="detail">
+        <div id="Title" class="detail" style="font-size: 30px; left: 10.5%;">HOME</div>
+        <div class="detail" style="position: absolute; z-index: 3; right: 30px; white-space: nowrap;">
+            <div id="accStatus" style="position: absolute;"></div>
+            <div id="Account" style="z-index: 3; font-size: 20px; position: relative;">[Account]</div>
+        </div>
+    </div>
+</body>
+<script>
+
+    //database
+
+    //Start up
+    window.onload = function () {
+        //Get data from session storage
+        var user = JSON.parse(sessionStorage.getItem("user"));
+        if (user) {
+            document.getElementById("Account").innerHTML = user[1];
+
+            if (sessionStorage.getItem("status") == "active") {
+                document.getElementById("status").className = "stActive detail";
+            } else if (sessionStorage.getItem("status") == null || sessionStorage.getItem("status") == "unactive") {
+                document.getElementById("status").className = "stUnactive detail";
+            }
+        }
+    }
+
+    function logout() {
+        //Clear session storage *temp
+        var user = JSON.parse(sessionStorage.getItem("user"));
+        if (user) {
+            window.sessionStorage.removeItem("user");
+            window.location.href = "login.html";
+        }
+    }
+
+</script>
+
+</html>
