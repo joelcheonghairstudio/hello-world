@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+
+<head>
+    <meta http-equiv="Permissions-Policy" content="interest-cohort=()">
+    <title>JCHS POS</title>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+        }
+
+        .menuSlot {
+            width: 50px;
+            height: 50px;
+            padding: 10px;
+        }
+
+        .active {
+            cursor: pointer;
+        }
+
+        .active:active {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .now {
+            width: 50px;
+            filter: invert(100%) drop-shadow(0px 0px 5px rgba(0, 0, 0, 0.363));
+        }
+
+        .detail {
+            position: absolute;
+            top: 18px;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+        }
+
+        .center {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 50%;
+        }
+
+        .content {
+            font-size: 20px;
+            font-family: Arial, Helvetica, sans-serif;
+            overflow: hidden;
+            margin: 10px;
+            height: 123px;
+        }
+
+        .clockIn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40%;
+            height: 40%;
+            border-radius: 10px;
+            background: linear-gradient(to right bottom, rgb(240, 240, 240), rgb(221, 221, 221));
+            filter: drop-shadow(4px 4px 10px rgb(0, 0, 0, 0.1));
+            min-width: 280px;
+        }
+
+        .clockOut {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40%;
+            height: 40%;
+            border-radius: 10px;
+            color: white;
+            background: url(png/night.png), linear-gradient(to right bottom, rgb(29, 29, 29), rgb(88, 88, 88));
+            background-size: calc(285px * 0.5) calc(298px * 0.5), auto;
+            background-repeat: no-repeat, no-repeat;
+            filter: drop-shadow(4px 4px 10px rgb(0, 0, 0, 0.1));
+            min-width: 280px;
+        }
+
+        .stActive {
+            border-radius: 20px;
+            height: 20px;
+            width: 20px;
+            background-color: lightgreen;
+            transform: translate(-50%, -50%);
+        }
+
+        .stUnactive {
+            border-radius: 20px;
+            height: 20px;
+            width: 20px;
+            background-color: red;
+            transform: translate(-50%, -50%);
+        }
+
+        /* width */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        /* Track */
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+        }
+
+        /* Handle on hover */
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="main"
+        style="position: absolute; width: 90%; height: 85%; top: 50%; left: 50%; transform: translate(-46%, -48%); overflow: auto;">
+        <div class="content">
+            <div style="position: relative; left: 10px;">
+                <div>
+                    Employee Name: <span id="employeeName"></span>
+                </div>
+                <div>
+                    Status: <span id="status"></span>
+                </div>
+                <br>
+                <div>
+                    Clock-in: <span id="clockIn"></span>
+                </div>
+                <div>
+                    Clock-out: <span id="clockOut"></span>
+                </div>
+            </div>
+            <div class="clockIn" id="clockInOut" onclick="clockInOut(true)">
+                <div id="clockButton"
+                    style="position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); font-size: 50px; white-space: nowrap;">
+                    Clock-in
+                </div>
+                <div
+                    style="position: absolute; top: 60%; left: 50%; transform: translate(-50%, -50%); font-size: 15px; text-align: center;">
+                    Click me
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="menu"
+        style="width: 70px; height: 100vh; background-image: linear-gradient(rgb(240, 240, 240), lightgray); top: 50%; left: 1.9%; position: absolute; transform: translate(0%, -50%);">
+        <div style="top: 50%; position: relative; transform: translate(0%, -50%);">
+            <div class="menuSlot active">
+                <div style="height: 6px;"></div>
+                <div style="height: 8px; background-color: rgb(54, 54, 54); width: 50px;"></div>
+                <div style="height: 10px;"></div>
+                <div style="height: 8px; background-color: rgb(54, 54, 54); width: 50px;"></div>
+                <div style="height: 10px;"></div>
+                <div style="height: 8px; background-color: rgb(54, 54, 54); width: 50px;"></div>
+                <div style="height: 6px;"></div>
+            </div>
+            <div class="menuSlot active" onclick="window.location.href = 'main.html';">
+                <img src="png/home.png" style="width: 50px;" />
+            </div>
+            <div class="menuSlot now">
+                <img src="png/attendance.png" style="width: 50px;" />
+            </div>
+            <div class="menuSlot">
+
+            </div>
+            <div class="menuSlot">
+
+            </div>
+            <div class="menuSlot">
+
+            </div>
+            <div class="menuSlot">
+
+            </div>
+            <div class="menuSlot">
+
+            </div>
+            <div class="menuSlot active" onclick="logout()">
+                <img src="png/logout.png" style="width: 50px;" />
+            </div>
+        </div>
+    </div>
+
+    <div id="detail">
+        <div id="Title" class="detail" style="font-size: 30px; left: 10.5%;">ATTENDANCE</div>
+        <div class="detail" style="position: absolute; z-index: 3; right: 30px; white-space: nowrap;">
+            <div id="accStatus" style="position: absolute;"></div>
+            <div id="Account" style="z-index: 3; font-size: 20px; position: relative;">[Account]</div>
+        </div>
+    </div>
+
+</body>
+<script>
+
+    //database
+
+    //Start up
+    window.onload = function () {
+        //Get data from session storage
+        var user = JSON.parse(sessionStorage.getItem("user"));
+        if (user) {
+            document.getElementById("Account").innerHTML = user[1];
+            document.getElementById("employeeName").innerHTML = user[1];
+            document.getElementById("status").innerHTML = sessionStorage.getItem("status");
+
+            if (sessionStorage.getItem("status") == "active") {
+                document.getElementById("accStatus").className = "stActive detail";
+            } else if (sessionStorage.getItem("status") == null || sessionStorage.getItem("status") == "unactive") {
+                document.getElementById("accStatus").className = "stUnactive detail";
+            }
+        }
+    }
+
+    clockInOut();
+
+    function clockInOut(on) {
+
+        var currentdate = new Date();
+        var datetime = currentdate.getDate() + "/"
+            + (currentdate.getMonth() + 1) + "/"
+            + currentdate.getFullYear() + " @ "
+            + currentdate.getHours() + ":"
+            + currentdate.getMinutes() + ":"
+            + currentdate.getSeconds();
+
+        var status = sessionStorage.getItem("status");
+        if (!on) {
+            switch (status) {
+                case "active":
+                    status = "unactive";
+                    break;
+                case "unactive":
+                    status = "active";
+                    break;
+                default:
+                    break;
+            }
+        }
+        switch (status) {
+            case "active":
+                if (on) {
+                    sessionStorage.setItem("status", "unactive");
+                    sessionStorage.setItem("clockOut", datetime);
+                    status = "unactive";
+                }
+                // status = "unactive";
+                document.getElementById("accStatus").className = "stUnactive detail";
+                document.getElementById("status").innerHTML = status;
+                document.getElementById("clockButton").innerHTML = "Clock-in";
+                document.getElementById("clockInOut").className = "clockIn";
+                break;
+            case "unactive":
+                if (on) {
+                    sessionStorage.setItem("status", "active");
+                    sessionStorage.setItem("clockIn", datetime);
+                    sessionStorage.setItem("clockOut", "");
+                    status = "active";
+                }
+                // status = "active";
+                document.getElementById("accStatus").className = "stActive detail";
+                document.getElementById("status").innerHTML = status;
+                document.getElementById("clockButton").innerHTML = "Clock-out";
+                document.getElementById("clockInOut").className = "clockOut";
+                break;
+            default:
+                break;
+        }
+
+        document.getElementById("clockIn").innerHTML = sessionStorage.getItem("clockIn");
+        document.getElementById("clockOut").innerHTML = sessionStorage.getItem("clockOut");
+
+    }
+
+    function logout() {
+        //Clear session storage *temp
+        var user = JSON.parse(sessionStorage.getItem("user"));
+        if (user) {
+            window.sessionStorage.removeItem("user");
+            window.location.href = "login.html";
+        }
+    }
+
+</script>
+
+</html>
