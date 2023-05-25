@@ -2,7 +2,7 @@
 
 <head>
     <meta http-equiv="Permissions-Policy" content="interest-cohort=()">
-    <title>JCHS POS</title>
+    <title>JCHS POS - Attendance</title>
     <style>
         body,
         html {
@@ -47,7 +47,6 @@
             font-family: Arial, Helvetica, sans-serif;
             overflow: hidden;
             margin: 10px;
-            height: 123px;
         }
 
         .clockIn {
@@ -170,8 +169,8 @@
             <div class="menuSlot now">
                 <img src="png/attendance.png" style="width: 50px;" />
             </div>
-            <div class="menuSlot">
-
+            <div class="menuSlot active" onclick="window.location.href = 'cash_record.html';">
+                <img src="png/money_bag.png" style="width: 50px;" />
             </div>
             <div class="menuSlot">
 
@@ -192,7 +191,7 @@
     </div>
 
     <div id="detail">
-        <div id="Title" class="detail" style="font-size: 30px; left: 10.5%;">ATTENDANCE</div>
+        <div id="Title" class="detail" style="font-size: 50px; left: 10.5%;">ATTENDANCE</div>
         <div class="detail" style="position: absolute; z-index: 3; right: 30px; white-space: nowrap;">
             <div id="accStatus" style="position: absolute;"></div>
             <div id="Account" style="z-index: 3; font-size: 20px; position: relative;">[Account]</div>

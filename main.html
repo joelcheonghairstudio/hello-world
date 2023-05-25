@@ -2,7 +2,7 @@
 
 <head>
     <meta http-equiv="Permissions-Policy" content="interest-cohort=()">
-    <title>JCHS POS</title>
+    <title>JCHS POS - Main</title>
     <style>
         body,
         html {
@@ -157,8 +157,8 @@
             <div class="menuSlot active" onclick="window.location.href = 'attendance.html';">
                 <img src="png/attendance.png" style="width: 50px;" />
             </div>
-            <div class="menuSlot">
-
+            <div class="menuSlot active" onclick="window.location.href = 'cash_record.html';">
+                <img src="png/money_bag.png" style="width: 50px;" />
             </div>
             <div class="menuSlot">
 
@@ -179,7 +179,7 @@
     </div>
 
     <div id="detail">
-        <div id="Title" class="detail" style="font-size: 30px; left: 10.5%;">HOME</div>
+        <div id="Title" class="detail" style="font-size: 50px; left: 10.5%;">HOME</div>
         <div class="detail" style="position: absolute; z-index: 3; right: 30px; white-space: nowrap;">
             <div id="accStatus" style="position: absolute;"></div>
             <div id="Account" style="z-index: 3; font-size: 20px; position: relative;">[Account]</div>
@@ -277,15 +277,20 @@
             sessionStorage.setItem("status", "unactive");
         }
 
+        if (sessionStorage.getItem("balance") == null) {
+            sessionStorage.setItem("balance", JSON.stringify(0));
+        }
+
         //initialise category list and item list
+        //Left and Right arrow
         for (var i = 0; i < category.length; i++) {
             document.getElementById("categoryList").innerHTML += `
                 <div class="category">
-                    <div id="right_${category[i][0]}" style="display: none; position: absolute; right: 30px; transform: translate(0%, 370%);" onclick="document.getElementById('itemList_' + '${category[i][0]}').scrollBy(170, 0);">
+                    <div id="right_${category[i][0]}" style="display: none; position: absolute; right: 30px; padding: 20px 2px 20px 2px; top: 8%;" onclick="document.getElementById('itemList_' + '${category[i][0]}').scrollBy(170, 0);">
                         <div style="border-style: solid solid none none; height: 15px; width: 15px; border-width: 2px; transform: rotate(45deg);">
                         </div>
                     </div>
-                    <div id="left_${category[i][0]}" style="display: none; position: absolute; left: 30px; transform: translate(0%, 370%);" onclick="document.getElementById('itemList_' + '${category[i][0]}').scrollBy(-170, 0);">
+                    <div id="left_${category[i][0]}" style="display: none; position: absolute; left: 30px; padding: 20px 2px 20px 2px; top: 8%;" onclick="document.getElementById('itemList_' + '${category[i][0]}').scrollBy(-170, 0);">
                         <div style="border-style: solid solid none none; height: 15px; width: 15px; border-width: 2px; transform: rotate(225deg);">
                         </div>
                     </div>
@@ -332,11 +337,12 @@
         }
     }
 
+    //Retrieve item from array using index
     function order(i, j) {
 
         console.log(name + " " + price);
         document.getElementById("order").innerHTML += `
-            <div style="position: absolute; left: 0px; top: 0px; height: 100%; width: 100%; z-index: 1;" onclick="document.getElementById('order').innerHTML = '';"></div>
+            <div style="position: absolute; left: 0px; top: 0px; height: 100%; width: 100%; z-index: 1; background-color: rgb(0, 0, 0, 0.3);" onclick="document.getElementById('order').innerHTML = '';"></div>
             
             <div style="z-index: 2; position: absolute; right: 0px; filter: drop-shadow(0px 0px 25px rgb(0, 0, 0, 0.3));">
                 <div id="resizeOrder" style="position: absolute; right: 500px; top: 50vh; transform: translate(0%, -50%); height: 50px; width: 25px; border-radius: 50px 0px 0px 50px; background-color: rgb(255, 255, 255, 0.9);"></div>
@@ -394,7 +400,7 @@
                     <td class="orderBorder">1.</td>
                     <td class="orderBorder">${name}</td>
                     <td class="orderBorder">${categoryName}</td>
-                    <td class="orderBorder">${price}</td>
+                    <td class="orderBorder" style="text-align: right;">${price}</td>
                 </tr>
             `;
         }
@@ -413,7 +419,7 @@
                     <td class="orderBorder">${i + 1}.</td>
                     <td class="orderBorder">${name}</td>
                     <td class="orderBorder">${categoryName}</td>
-                    <td class="orderBorder">${price}</td>
+                    <td class="orderBorder" style="text-align: right;">${price}</td>
                 </tr>
             `;
         }
@@ -421,23 +427,25 @@
         document.getElementById('orderList').innerHTML += `
             <tr class="orderBorder">
                 <td class="orderBorder" colspan="3" style="text-align: right;">Total</td>
-                <td class="orderBorder">${totalPrice.toFixed(2)}</td>
+                <td class="orderBorder" style="text-align: right;">${totalPrice.toFixed(2)}</td>
             </tr>
         `;
 
     }
 
+    //add item to order
     function addOrder(name, categoryName, price) {
+
+        //get array from storage
         var order = JSON.parse(sessionStorage.getItem("order"));
         order.push([name, categoryName, price]);
         sessionStorage.setItem("order", JSON.stringify(order));
         document.getElementById("addOrder").outerHTML = `
             <div id="addOrder" style="width: 100%; height: 30px; font-size: 26px; position: relative; margin-top: 20px; text-align: center;">
-                Added.
+                Added <span style="color: green;">✓</span>
             </div>
         `;
 
-        var order = JSON.parse(sessionStorage.getItem("order"));
         document.getElementById('orderList').innerHTML = `
             <table id="orderList" style="border-collapse: collapse; width: 100%; position: relative; margin-top: 10px;">
                 <tr class="orderBorder">
@@ -449,6 +457,8 @@
             </table>
         `;
 
+        //Display order list
+        var order = JSON.parse(sessionStorage.getItem("order"));
         var totalPrice = 0;
 
         for (var i = 0; i < order.length; i++) {
@@ -463,7 +473,7 @@
                         <td class="orderBorder">${i + 1}.</td>
                         <td class="orderBorder">${name}</td>
                         <td class="orderBorder">${categoryName}</td>
-                        <td class="orderBorder">${price}</td>
+                        <td class="orderBorder" style="text-align: right;">${price}</td>
                     </tr>
                 `;
             } else {
@@ -472,7 +482,7 @@
                         <td class="orderBorder">${i + 1}.</td>
                         <td class="orderBorder">${name}</td>
                         <td class="orderBorder">${categoryName}</td>
-                        <td class="orderBorder">${price}</td>
+                        <td class="orderBorder" style="text-align: right;">${price}</td>
                     </tr>
                 `;
             }
@@ -494,7 +504,8 @@
         //Clear session storage *temp
         var user = JSON.parse(sessionStorage.getItem("user"));
         if (user) {
-            window.sessionStorage.removeItem("user");
+            sessionStorage.removeItem("user");
+            sessionStorage.setItem("order", JSON.stringify([]));
             window.location.href = "login.html";
         }
     }

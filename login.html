@@ -2,7 +2,7 @@
 
 <head>
     <meta http-equiv="Permissions-Policy" content="interest-cohort=()">
-    <title>JCHS POS</title>
+    <title>JCHS POS - Login</title>
     <style>
         .alignCenter {
             position: absolute;
@@ -131,7 +131,6 @@
                         window.location.href = "main.html";
                         //window.location.href = "main.html?user=" + acc[index];
                         sessionStorage.setItem("user", JSON.stringify(acc[index]));
-                        sessionStorage.setItem("order", JSON.stringify([]));
                         break;
                     }
                 }

@@ -2,7 +2,7 @@
 
 <head>
     <meta http-equiv="Permissions-Policy" content="interest-cohort=()">
-    <title>JCHS POS</title>
+    <title>JCHS POS - Cash Record</title>
     <style>
         body,
         html {
@@ -43,10 +43,25 @@
         }
 
         .content {
-            font-size: 20px;
+            font-size: 25px;
             font-family: Arial, Helvetica, sans-serif;
             overflow: hidden;
             margin: 10px;
+        }
+
+        .cashButton {
+            user-select: none;
+            position: absolute;
+            border-radius: 5px;
+            width: 170px;
+            text-align: center;
+            margin-top: 30px;
+            background-color: rgb(230, 230, 230);
+            padding: 10px 20px 10px 20px;
+        }
+
+        .cashButton:active {
+            background-color: rgb(210, 210, 210);
         }
 
         .stActive {
@@ -84,6 +99,18 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #555;
         }
+
+        /* Chrome, Safari, Edge, Opera */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* Firefox */
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
     </style>
 </head>
 
@@ -91,7 +118,33 @@
 
     <div id="main"
         style="position: absolute; width: 90%; height: 85%; top: 50%; left: 50%; transform: translate(-46%, -48%); overflow: auto;">
-
+        <div class="content" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+            <div style="position: relative;">
+                <div style="margin-bottom: 40px;">
+                    Current Balance: RM <span id="balance"></span><span id="modifiedAmount" style="color: gray;"></span>
+                </div>
+                <div style="margin-top: 60px;">
+                    Amount(RM):
+                    <input id="amount" type="number"
+                        style="font-size: 25px; border: none; outline: none; border-bottom: 1px solid #ccc;">
+                </div>
+                <div style="margin-top: 20px;">
+                    Remark:
+                    <input id="remark" type="text"
+                        style="font-size: 25px; border: none; outline: none; border-bottom: 1px solid #ccc;">
+                </div>
+                <div style="position: relative; height: 88px; margin-top: 50px;">
+                    <div class="cashButton" style="left: 0%;"
+                        onclick="cashRecord(+document.getElementById('amount').value, document.getElementById('remark').value);">
+                        Cash in (+)
+                    </div>
+                    <div class="cashButton" style="right: 0%;"
+                        onclick="cashRecord(-document.getElementById('amount').value, document.getElementById('remark').value);">
+                        Cash out (-)
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div id="menu"
@@ -106,13 +159,13 @@
                 <div style="height: 8px; background-color: rgb(54, 54, 54); width: 50px;"></div>
                 <div style="height: 6px;"></div>
             </div>
-            <div class="menuSlot" onclick="window.location.href = 'main.html';">
+            <div class="menuSlot active" onclick="window.location.href = 'main.html';">
                 <img src="png/home.png" style="width: 50px;" />
             </div>
             <div class="menuSlot active" onclick="window.location.href = 'attendance.html';">
                 <img src="png/attendance.png" style="width: 50px;" />
             </div>
-            <div class="menuSlot active" onclick="window.location.href = 'cash_record.html';">
+            <div class="menuSlot now">
                 <img src="png/money_bag.png" style="width: 50px;" />
             </div>
             <div class="menuSlot">
@@ -134,7 +187,7 @@
     </div>
 
     <div id="detail">
-        <div id="Title" class="detail" style="font-size: 50px; left: 10.5%;">HOME</div>
+        <div id="Title" class="detail" style="font-size: 50px; left: 10.5%;">CASH REGISTER</div>
         <div class="detail" style="position: absolute; z-index: 3; right: 30px; white-space: nowrap;">
             <div id="accStatus" style="position: absolute;"></div>
             <div id="Account" style="z-index: 3; font-size: 20px; position: relative;">[Account]</div>
@@ -151,12 +204,32 @@
         var user = JSON.parse(sessionStorage.getItem("user"));
         if (user) {
             document.getElementById("Account").innerHTML = user[1];
+            document.getElementById("balance").innerHTML = JSON.parse(sessionStorage.getItem("balance")).toFixed(2);
 
             if (sessionStorage.getItem("status") == "active") {
                 document.getElementById("accStatus").className = "stActive detail";
             } else if (sessionStorage.getItem("status") == null || sessionStorage.getItem("status") == "unactive") {
                 document.getElementById("accStatus").className = "stUnactive detail";
             }
+        }
+    }
+
+    //Cash in and out
+    function cashRecord(amount, remark) {
+
+        if (JSON.parse(amount) != 0 && JSON.parse(amount) != null) {
+
+            var balance = JSON.parse(sessionStorage.getItem("balance")) + JSON.parse(amount);
+
+            //modify balance from storage
+            sessionStorage.setItem("balance", JSON.stringify(balance));
+            document.getElementById("balance").innerHTML = balance.toFixed(2);
+            if (JSON.parse(amount) > 0) {
+                document.getElementById("modifiedAmount").innerHTML = " (+" + JSON.parse(amount).toFixed(2) + ")";
+            } else {
+                document.getElementById("modifiedAmount").innerHTML = " (" + JSON.parse(amount).toFixed(2) + ")";
+            }
+
         }
     }
 
