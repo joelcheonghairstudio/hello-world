@@ -2,157 +2,123 @@
 
 <head>
     <meta http-equiv="Permissions-Policy" content="interest-cohort=()">
-    <title>JCHS POS - Login</title>
+    <title>JCHS POS</title>
     <style>
-        .alignCenter {
-            position: absolute;
-            top: 50%;
-            align-self: center;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            line-height: 1.5;
+        body,
+        html {
+            margin: 0;
+            padding: 0;
         }
 
-        .bold {
-            font-weight: bold;
-            font-size: 50px;
+        /* width */
+        ::-webkit-scrollbar {
+            width: 10px;
         }
 
-        .pin {
-            font-size: 50px;
-            text-align: center;
-            width: 50px;
-            border-width: 0 0 2px;
+        /* Track */
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
         }
 
-        .pin:focus {
-            border-width: 0 0 3px;
-            outline: 0;
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+        }
+
+        /* Handle on hover */
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
         }
     </style>
 </head>
 
 <body>
-    <div id="alert"
-        style="position: absolute; top: 30px; align-self: center; left: 50%; transform: translate(-50%, 0%); text-align: center; padding: 10px; color: white;">
-    </div>
-    <form id="staffPin" class="alignCenter bold">
-        <label>Staff PIN</label>
-        <hr>
-        <input id="pin1" type="text" class="pin" minlength="1" maxlength="1" pattern="[0-9]{1}"
-            onkeydown="nextPin('pin1')" oninput="isNum('pin1')"></input>
-        <input id="pin2" type="text" class="pin" minlength="1" maxlength="1" pattern="[0-9]{1}"
-            onkeydown="nextPin('pin2')" oninput="isNum('pin2')"></input>
-        <input id="pin3" type="text" class="pin" minlength="1" maxlength="1" pattern="[0-9]{1}"
-            onkeydown="nextPin('pin3')" oninput="isNum('pin3')"></input>
-        <input id="pin4" type="text" class="pin" minlength="1" maxlength="1" pattern="[0-9]{1}"
-            onkeydown="nextPin('pin4')" oninput="isNum('pin4')"></input>
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+        Account
+        <input id="account" type="text">
         <br>
-        <button type="button" style="font-size: 20px; padding: 3px 10px 3px 10px;"
-            onclick="login(getId('pin1'), getId('pin2'), getId('pin3'), getId('pin4'))">
-            Log In</button>
-    </form>
+        <br>
+        Password
+        <input id="pass" type="text">
+        <br>
+        <br>
+        <button id="login">Login</button>
+    </div>
 </body>
+
 <script>
-    //Start up
-    window.onload = function () {
-        //Clear session storage *temp
-        var user = JSON.parse(sessionStorage.getItem("user"));
-        if (user) {
-            alertFunc(user[1] + " is logged out.");
-            window.sessionStorage.removeItem("user");
-        }
-    }
+    //
+</script>
 
-    //Alert function
-    var alertTimeout = 0;
-    function alertFunc(text, timeAdd = 0) {
-        document.getElementById('alert').innerHTML = text;
-        document.getElementById('alert').style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
-        if (alertTimeout <= 0) {
-            var alertTimeoutInterval = setInterval(() => {
-                alertTimeout -= 1;
-                if (alertTimeout <= 0) {
-                    document.getElementById('alert').innerHTML = '';
-                    document.getElementById('alert').style.backgroundColor = 'rgba(0, 0, 0, 0)';
-                    clearInterval(alertTimeoutInterval);
-                    alertTimeout = 0;
-                }
-            }, 1)
-        }
-        alertTimeout = 600 + timeAdd;
-    }
-    function getId(id) {
-        return document.getElementById(id).value;
-    }
-    function isNum(id) {
-        if (!(getId(id) >= 0 && getId(id) <= 9) || getId(id) == " ") {
-            document.getElementById(id).value = '';
-        }
-    }
-    function nextPin(id) {
-        var key = event.keyCode;
-        document.getElementById(id).selectionStart = 0;
-        document.getElementById(id).selectionEnd = 1;
-        switch (true) {
-            case (getId(id) && key >= 48 && key <= 57 && parseInt(id[3]) < 4):
-                id = "pin" + (parseInt(id[3]) + 1);
-                if (!getId(id)) {
-                    document.getElementById(id).focus();
-                } else {
-                    id = "pin" + (parseInt(id[3]) - 1);
-                }
-                break;
-            case (key == 37 && parseInt(id[3]) > 1) || (getId(id) == "" && key == 8 && parseInt(id[3]) > 1):
-                id = "pin" + (parseInt(id[3]) - 1);
-                document.getElementById(id).focus();
-                break;
-            case (key == 39 && parseInt(id[3]) < 4):
-                id = "pin" + (parseInt(id[3]) + 1);
-                document.getElementById(id).focus();
-                break;
-            case (key == 13):
-                login(getId('pin1'), getId('pin2'), getId('pin3'), getId('pin4'))
-                break;
-            default:
-                break;
-        }
-    }
-    function login(p1, p2, p3, p4) {
-        if (p1 && p2 && p3 && p4) {
-            var pin = p1 + p2 + p3 + p4;
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
 
-            for (let index = 0; index <= acc.length; index++) {
-                //const element = acc[index];
-                if (index < acc.length) {
-                    if (acc[index][0] == pin) {
-                        //Next page
-                        window.location.href = "main.html";
-                        //window.location.href = "main.html?user=" + acc[index];
-                        sessionStorage.setItem("user", JSON.stringify(acc[index]));
-                        break;
-                    }
-                }
-                if (index >= acc.length) {
-                    alertFunc("No such staff.");
-                }
-            }
-        } else {
-            alertFunc("Wrong format.");
-        }
-    }
-    function visible(id) {
-        var x = document.getElementById(id);
-        if (x.style.display === "none") {
-            x.style.display = "block";
-        } else {
-            x.style.display = "none";
-        }
-    }
+    //createUserWithEmailAndPassword
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+    import { getDatabase, set, ref, update } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
 
-    //DATABASE
-    var acc = [["1541", "Low Kar Weng"], ["1777", "She"]];
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyDJ2tr5BgD5euyA_Mdez-GyD0z6JFFb0lY",
+        authDomain: "joelcheonghsdata.firebaseapp.com",
+        databaseURL: "https://joelcheonghsdata-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "joelcheonghsdata",
+        storageBucket: "joelcheonghsdata.appspot.com",
+        messagingSenderId: "246172949748",
+        appId: "1:246172949748:web:b6de0a64bba1f7f49892a1"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+    const database = getDatabase(app);
+
+    login.addEventListener('click', (e) => {
+
+        //Retrieve input
+        var account = document.getElementById('account').value;
+        var pass = document.getElementById('pass').value;
+
+        signInWithEmailAndPassword(auth, account, pass)
+            .then((userCredential) => {
+                // Signed in 
+                const user = userCredential.user;
+                var currentdate = new Date();
+                var lgDate = currentdate.getDate() + "/"
+                    + (currentdate.getMonth() + 1) + "/"
+                    + currentdate.getFullYear() + " @ "
+                    + currentdate.getHours() + ":"
+                    + currentdate.getMinutes() + ":"
+                    + currentdate.getSeconds();
+
+                update(ref(database, 'users/' + user.uid), {
+                    last_login: lgDate,
+                })
+                    .then(() => {
+                        // User login successfully!
+                        console.log(user.uid + ' logged in.');
+                        localStorage.setItem("account", account);
+                        localStorage.setItem("pass", pass);
+                        window.location.href = "staffcode.html";
+
+                    })
+                    .catch((error) => {
+                        // The write failed...
+                        console.log(error);
+                    });
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                console.log(errorCode + ' Bug. ' + errorMessage);
+            });
+
+    });
+
 </script>
 
 </html>

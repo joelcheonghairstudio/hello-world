@@ -266,7 +266,7 @@
                 <div style="position: absolute; left: 0px; top: 0px; height: 100%; width: 100%; z-index: 1;">
                     <div style="font-size: 30px; white-space: pre-line; text-align: center; position: absolute; top: 50%; left: 50%; padding: 10px 30px 10px 30px; transform: translate(-50%, -50%); border: 1px solid rgba(0, 0, 0, 0.6); background-color: rgba(255, 255, 255, 0.6);"
                     >${info}
-                        <button type="button" onclick="window.location.href = 'login.html'">Return to Login</button>
+                        <button type="button" onclick="window.location.href = 'staffcode.html'">Return to Login</button>
                     </div>
                 </div>
             `;
@@ -523,9 +523,80 @@
         if (user) {
             sessionStorage.removeItem("user");
             sessionStorage.setItem("order", JSON.stringify([]));
-            window.location.href = "login.html";
+            window.location.href = "staffcode.html";
         }
     }
+
+</script>
+
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+
+    //createUserWithEmailAndPassword
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+    import { getDatabase, set, ref, update } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyDJ2tr5BgD5euyA_Mdez-GyD0z6JFFb0lY",
+        authDomain: "joelcheonghsdata.firebaseapp.com",
+        databaseURL: "https://joelcheonghsdata-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "joelcheonghsdata",
+        storageBucket: "joelcheonghsdata.appspot.com",
+        messagingSenderId: "246172949748",
+        appId: "1:246172949748:web:b6de0a64bba1f7f49892a1"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+    const database = getDatabase(app);
+
+    login.addEventListener('click', (e) => {
+
+        //Retrieve input
+        var account = document.getElementById('account').value;
+        var pass = document.getElementById('pass').value;
+
+        signInWithEmailAndPassword(auth, account, pass)
+            .then((userCredential) => {
+                // Signed in 
+                const user = userCredential.user;
+                var currentdate = new Date();
+                var lgDate = currentdate.getDate() + "/"
+                    + (currentdate.getMonth() + 1) + "/"
+                    + currentdate.getFullYear() + " @ "
+                    + currentdate.getHours() + ":"
+                    + currentdate.getMinutes() + ":"
+                    + currentdate.getSeconds();
+
+                update(ref(database, 'users/' + user.uid), {
+                    last_login: lgDate,
+                })
+                    .then(() => {
+                        // User login successfully!
+                        console.log(user.uid + ' logged in.');
+                        localStorage.setItem("account", account);
+                        localStorage.setItem("pass", pass);
+                        window.location.href = "staffcode.html";
+
+                    })
+                    .catch((error) => {
+                        // The write failed...
+                        console.log(error);
+                    });
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                console.log(errorCode + ' Bug. ' + errorMessage);
+            });
+
+    });
 
 </script>
 

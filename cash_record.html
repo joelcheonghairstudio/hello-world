@@ -219,7 +219,7 @@
                 <div style="position: absolute; left: 0px; top: 0px; height: 100%; width: 100%; z-index: 1;">
                     <div style="font-size: 30px; white-space: pre-line; text-align: center; position: absolute; top: 50%; left: 50%; padding: 10px 30px 10px 30px; transform: translate(-50%, -50%); border: 1px solid rgba(0, 0, 0, 0.6); background-color: rgba(255, 255, 255, 0.6);"
                     >${info}
-                        <button type="button" onclick="window.location.href = 'login.html'">Return to Login</button>
+                        <button type="button" onclick="window.location.href = 'staffcode.html'">Return to Login</button>
                     </div>
                 </div>
             `;
@@ -255,7 +255,7 @@
         var user = JSON.parse(sessionStorage.getItem("user"));
         if (user) {
             window.sessionStorage.removeItem("user");
-            window.location.href = "login.html";
+            window.location.href = "staffcode.html";
         }
     }
 
