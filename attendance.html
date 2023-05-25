@@ -343,47 +343,35 @@
     const auth = getAuth();
     const database = getDatabase(app);
 
-    login.addEventListener('click', (e) => {
+    //IMPORTANTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
+    //LOGIN AGAIN WHEN PAGE SWITCH
 
-        //Retrieve input
-        var account = document.getElementById('account').value;
-        var pass = document.getElementById('pass').value;
+    //Retrieve input
+    var account = localStorage.getItem("account");
+    var pass = localStorage.getItem("pass");
 
-        signInWithEmailAndPassword(auth, account, pass)
-            .then((userCredential) => {
-                // Signed in 
-                const user = userCredential.user;
-                var currentdate = new Date();
-                var lgDate = currentdate.getDate() + "/"
-                    + (currentdate.getMonth() + 1) + "/"
-                    + currentdate.getFullYear() + " @ "
-                    + currentdate.getHours() + ":"
-                    + currentdate.getMinutes() + ":"
-                    + currentdate.getSeconds();
+    signInWithEmailAndPassword(auth, account, pass)
+        .then((userCredential) => {
+            // Signed in 
+            const user = userCredential.user;
 
-                update(ref(database, 'users/' + user.uid), {
-                    last_login: lgDate,
-                })
-                    .then(() => {
-                        // User login successfully!
-                        console.log(user.uid + ' logged in.');
-                        localStorage.setItem("account", account);
-                        localStorage.setItem("pass", pass);
-                        window.location.href = "staffcode.html";
-
-                    })
-                    .catch((error) => {
-                        // The write failed...
-                        console.log(error);
-                    });
+            var lgDate = new Date();
+            update(ref(database, 'users/' + user.uid), {
             })
-            .catch((error) => {
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                console.log(errorCode + ' Bug. ' + errorMessage);
-            });
-
-    });
+                .then(() => {
+                    // Switch page login
+                    console.log(user.uid + ' is currently logged in.');
+                })
+                .catch((error) => {
+                    // The write failed...
+                    console.log(error);
+                });
+        })
+        .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(errorCode + ' Bug. ' + errorMessage);
+        });
 
 </script>
 
