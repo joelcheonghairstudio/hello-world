@@ -138,7 +138,7 @@
                     Clock-out: <span id="clockOut"></span>
                 </div>
             </div>
-            <div class="clockIn" id="clockInOut" onclick="clockInOut(true)">
+            <div class="clockIn" id="clockInOut">
                 <div id="clockButton"
                     style="position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); font-size: 50px; white-space: nowrap;">
                     Clock-in
@@ -206,30 +206,10 @@
     //Start up
     window.onload = function () {
         //Get data from session storage
-        var user = JSON.parse(sessionStorage.getItem("user"));
+        var user = sessionStorage.getItem("user");
         if (user) {
-            document.getElementById("Account").innerHTML = user[1];
-            document.getElementById("employeeName").innerHTML = user[1];
-
-            //Set status and clock-in/out time
-            var status = sessionStorage.getItem("status");
-
-            if (sessionStorage.getItem("status") == "active") {
-                status = "active";
-                document.getElementById("accStatus").className = "stActive detail";
-                document.getElementById("status").innerHTML = status;
-                document.getElementById("clockButton").innerHTML = "Clock-out";
-                document.getElementById("clockInOut").className = "clockOut";
-            } else if (sessionStorage.getItem("status") == null || sessionStorage.getItem("status") == "unactive") {
-                status = "unactive";
-                document.getElementById("accStatus").className = "stUnactive detail";
-                document.getElementById("status").innerHTML = status;
-                document.getElementById("clockButton").innerHTML = "Clock-in";
-                document.getElementById("clockInOut").className = "clockIn";
-            }
-
-            document.getElementById("clockIn").innerHTML = sessionStorage.getItem("clockIn");
-            document.getElementById("clockOut").innerHTML = sessionStorage.getItem("clockOut");
+            document.getElementById("Account").innerHTML = user;
+            document.getElementById("employeeName").innerHTML = user;
 
         } else {
 
@@ -245,69 +225,16 @@
             `;
         }
 
-    }
-
-    function clockInOut(on) {
-
-        var currentdate = new Date();
-        var datetime = currentdate.getDate() + "/"
-            + (currentdate.getMonth() + 1) + "/"
-            + currentdate.getFullYear() + " @ "
-            + currentdate.getHours() + ":"
-            + currentdate.getMinutes() + ":"
-            + currentdate.getSeconds();
-
-        var status = sessionStorage.getItem("status");
-        if (!on) {
-            switch (status) {
-                case "active":
-                    status = "unactive";
-                    break;
-                case "unactive":
-                    status = "active";
-                    break;
-                default:
-                    break;
-            }
+        //Direct to login if login is outdated. (not staff code)
+        if (!localStorage.getItem("account")) {
+            window.location.href = "login.html";
         }
-        switch (status) {
-            case "active":
-                if (on) {
-                    sessionStorage.setItem("status", "unactive");
-                    sessionStorage.setItem("clockOut", datetime);
-                    status = "unactive";
-                }
-                // status = "unactive";
-                document.getElementById("accStatus").className = "stUnactive detail";
-                document.getElementById("status").innerHTML = status;
-                document.getElementById("clockButton").innerHTML = "Clock-in";
-                document.getElementById("clockInOut").className = "clockIn";
-                break;
-            case "unactive":
-                if (on) {
-                    sessionStorage.setItem("status", "active");
-                    sessionStorage.setItem("clockIn", datetime);
-                    sessionStorage.setItem("clockOut", "");
-                    status = "active";
-                }
-                // status = "active";
-                document.getElementById("accStatus").className = "stActive detail";
-                document.getElementById("status").innerHTML = status;
-                document.getElementById("clockButton").innerHTML = "Clock-out";
-                document.getElementById("clockInOut").className = "clockOut";
-                break;
-            default:
-                break;
-        }
-
-        document.getElementById("clockIn").innerHTML = sessionStorage.getItem("clockIn");
-        document.getElementById("clockOut").innerHTML = sessionStorage.getItem("clockOut");
 
     }
 
     function logout() {
         //Clear session storage *temp
-        var user = JSON.parse(sessionStorage.getItem("user"));
+        var user = sessionStorage.getItem("user");
         if (user) {
             window.sessionStorage.removeItem("user");
             window.location.href = "staffcode.html";
@@ -322,7 +249,7 @@
 
     //createUserWithEmailAndPassword
     import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
-    import { getDatabase, set, ref, update } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+    import { getDatabase, set, ref, update, child, get, onValue } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
 
     // TODO: Add SDKs for Firebase products that you want to use
     // https://firebase.google.com/docs/web/setup#available-libraries
@@ -350,10 +277,13 @@
     var account = localStorage.getItem("account");
     var pass = localStorage.getItem("pass");
 
+    //Sign In function
     signInWithEmailAndPassword(auth, account, pass)
         .then((userCredential) => {
             // Signed in 
             const user = userCredential.user;
+
+            console.log(auth.currentUser.uid);
 
             var lgDate = new Date();
             update(ref(database, 'users/' + user.uid), {
@@ -361,6 +291,7 @@
                 .then(() => {
                     // Switch page login
                     console.log(user.uid + ' is currently logged in.');
+
                 })
                 .catch((error) => {
                     // The write failed...
@@ -371,7 +302,94 @@
             const errorCode = error.code;
             const errorMessage = error.message;
             console.log(errorCode + ' Bug. ' + errorMessage);
+            //Direct to login if login is outdated. (not staff code)
+            window.location.href = "login.html";
         });
+
+    //Create attendance and append
+    clockInOut.addEventListener('click', (e) => {
+
+        var currentdate = new Date();
+        var date = currentdate.getFullYear() + "/"
+            + (currentdate.getMonth() + 1) + "/"
+            + currentdate.getDate();
+
+        var time = ((currentdate.getHours() / 10 >= 1) ? currentdate.getHours() : "0" + currentdate.getHours()) + ":"
+            + ((currentdate.getMinutes() / 10 >= 1) ? currentdate.getMinutes() : "0" + currentdate.getMinutes()) + ":"
+            + ((currentdate.getSeconds() / 10 >= 1) ? currentdate.getSeconds() : "0" + currentdate.getSeconds());
+
+        get(child(ref(database), 'staffcode/' + sessionStorage.getItem('staffCode') + '/attendance/' + date)).then((snapshot) => {
+            if (snapshot.exists()) {
+
+                //Find unfinish clock-in
+                var end = false;
+                snapshot.forEach(function (childSnapshot) {
+                    if (childSnapshot.child("end").val() == false) {
+                        end = true;
+                        set(ref(database, 'staffcode/' + sessionStorage.getItem('staffCode') + '/attendance/' + date + '/' + childSnapshot.key), {
+                            end: time
+                        })
+                    }
+                });
+
+                //If no unfinish clock-in
+                if (end == false) {
+                    set(ref(database, 'staffcode/' + sessionStorage.getItem('staffCode') + '/attendance/' + date + '/' + time), {
+                        end: false
+                    })
+                }
+            } else {
+                //If even no location for clock-in
+                set(ref(database, 'staffcode/' + sessionStorage.getItem('staffCode') + '/attendance/' + date + '/' + time), {
+                    end: false
+                })
+            }
+        }).catch((error) => {
+            console.error(error);
+        });
+
+    });
+
+    var currentdate = new Date();
+    var date = currentdate.getFullYear() + "/"
+        + (currentdate.getMonth() + 1) + "/"
+        + currentdate.getDate();
+
+    onValue(ref(database, 'staffcode/' + sessionStorage.getItem('staffCode') + '/attendance/' + date), (snapshot) => {
+        if (snapshot.exists()) {
+
+            //Find unfinish clock-in - Active
+            var end = false;
+            snapshot.forEach(function (childSnapshot) {
+                if (childSnapshot.child("end").val() == false) {
+
+                    end = true;
+
+                    document.getElementById("accStatus").className = "stActive detail";
+                    document.getElementById("status").innerHTML = "active";
+                    document.getElementById("clockButton").innerHTML = "Clock-out";
+                    document.getElementById("clockInOut").className = "clockOut";
+
+                }
+
+                document.getElementById("clockIn").innerHTML = childSnapshot.key;
+                document.getElementById("clockOut").innerHTML = childSnapshot.child("end").val();
+
+            });
+
+            //If no unfinish clock-in - Unactive
+            if (end == false) {
+
+                document.getElementById("accStatus").className = "stUnactive detail";
+                document.getElementById("status").innerHTML = "unactive";
+                document.getElementById("clockButton").innerHTML = "Clock-in";
+                document.getElementById("clockInOut").className = "clockIn";
+
+            }
+
+        }
+
+    });
 
 </script>
 

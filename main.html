@@ -247,9 +247,9 @@
     //Start up
     window.onload = function () {
         //Get data from session storage
-        var user = JSON.parse(sessionStorage.getItem("user"));
+        var user = sessionStorage.getItem("user");
         if (user) {
-            document.getElementById("Account").innerHTML = user[1];
+            document.getElementById("Account").innerHTML = user;
 
             //employee attendance status
             if (sessionStorage.getItem("status") == "active") {
@@ -271,6 +271,11 @@
                 </div>
             `;
 
+        }
+
+        //Direct to login if login is outdated. (not staff code)
+        if (!localStorage.getItem("account")) {
+            window.location.href = "login.html";
         }
 
         if (sessionStorage.getItem("status") == null) {
@@ -519,7 +524,7 @@
 
     function logout() {
         //Clear session storage *temp
-        var user = JSON.parse(sessionStorage.getItem("user"));
+        var user = sessionStorage.getItem("user");
         if (user) {
             sessionStorage.removeItem("user");
             sessionStorage.setItem("order", JSON.stringify([]));
@@ -563,6 +568,7 @@
     var account = localStorage.getItem("account");
     var pass = localStorage.getItem("pass");
 
+    //Sign In function
     signInWithEmailAndPassword(auth, account, pass)
         .then((userCredential) => {
             // Signed in 
@@ -584,6 +590,8 @@
             const errorCode = error.code;
             const errorMessage = error.message;
             console.log(errorCode + ' Bug. ' + errorMessage);
+            //Direct to login if login is outdated. (not staff code)
+            window.location.href = "login.html";
         });
 
 </script>

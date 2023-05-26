@@ -148,9 +148,9 @@
     //Start up
     window.onload = function () {
         //Get data from session storage
-        var user = JSON.parse(sessionStorage.getItem("user"));
+        var user = sessionStorage.getItem("user");
         if (user) {
-            document.getElementById("Account").innerHTML = user[1];
+            document.getElementById("Account").innerHTML = user;
 
             if (sessionStorage.getItem("status") == "active") {
                 document.getElementById("accStatus").className = "stActive detail";
@@ -170,17 +170,84 @@
                 </div>
             `;
         }
-        
+
+        //Direct to login if login is outdated. (not staff code)
+        if (!localStorage.getItem("account")) {
+            window.location.href = "login.html";
+        }
+
     }
 
     function logout() {
         //Clear session storage *temp
-        var user = JSON.parse(sessionStorage.getItem("user"));
+        var user = sessionStorage.getItem("user");
         if (user) {
             window.sessionStorage.removeItem("user");
             window.location.href = "login.html";
         }
     }
+
+</script>
+
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+
+    //createUserWithEmailAndPassword
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+    import { getDatabase, set, ref, update } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyDJ2tr5BgD5euyA_Mdez-GyD0z6JFFb0lY",
+        authDomain: "joelcheonghsdata.firebaseapp.com",
+        databaseURL: "https://joelcheonghsdata-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "joelcheonghsdata",
+        storageBucket: "joelcheonghsdata.appspot.com",
+        messagingSenderId: "246172949748",
+        appId: "1:246172949748:web:b6de0a64bba1f7f49892a1"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+    const database = getDatabase(app);
+
+    //IMPORTANTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
+    //LOGIN AGAIN WHEN PAGE SWITCH
+
+    //Retrieve input
+    var account = localStorage.getItem("account");
+    var pass = localStorage.getItem("pass");
+
+    //Sign In function
+    signInWithEmailAndPassword(auth, account, pass)
+        .then((userCredential) => {
+            // Signed in 
+            const user = userCredential.user;
+
+            var lgDate = new Date();
+            update(ref(database, 'users/' + user.uid), {
+            })
+                .then(() => {
+                    // Switch page login
+                    console.log(user.uid + ' is currently logged in.');
+                })
+                .catch((error) => {
+                    // The write failed...
+                    console.log(error);
+                });
+        })
+        .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(errorMessage);
+
+            window.location.href = "login.html";
+        });
 
 </script>
 

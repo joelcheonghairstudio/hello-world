@@ -121,7 +121,8 @@
         <div class="content" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
             <div style="position: relative;">
                 <div style="margin-bottom: 40px;">
-                    Current Balance: RM <span id="balance"></span><span id="modifiedAmount" style="color: gray;"></span>
+                    Current Balance: RM <span id="balance"></span> <span id="modifiedAmount"
+                        style="color: gray;"></span>
                 </div>
                 <div style="margin-top: 60px;">
                     Amount(RM):
@@ -134,12 +135,10 @@
                         style="font-size: 25px; border: none; outline: none; border-bottom: 1px solid #ccc;">
                 </div>
                 <div style="position: relative; height: 88px; margin-top: 50px;">
-                    <div class="cashButton" style="left: 0%;"
-                        onclick="cashRecord(+document.getElementById('amount').value, document.getElementById('remark').value);">
+                    <div id="cashIn" class="cashButton" style="left: 0%;">
                         Cash in (+)
                     </div>
-                    <div class="cashButton" style="right: 0%;"
-                        onclick="cashRecord(-document.getElementById('amount').value, document.getElementById('remark').value);">
+                    <div id="cashOut" class="cashButton" style="right: 0%;">
                         Cash out (-)
                     </div>
                 </div>
@@ -202,10 +201,9 @@
     //Start up
     window.onload = function () {
         //Get data from session storage
-        var user = JSON.parse(sessionStorage.getItem("user"));
+        var user = sessionStorage.getItem("user");
         if (user) {
-            document.getElementById("Account").innerHTML = user[1];
-            document.getElementById("balance").innerHTML = JSON.parse(sessionStorage.getItem("balance")).toFixed(2);
+            document.getElementById("Account").innerHTML = user;
 
             if (sessionStorage.getItem("status") == "active") {
                 document.getElementById("accStatus").className = "stActive detail";
@@ -224,6 +222,11 @@
                     </div>
                 </div>
             `;
+        }
+
+        //Direct to login if login is outdated. (not staff code)
+        if (!localStorage.getItem("account")) {
+            window.location.href = "login.html";
         }
     }
 
@@ -253,7 +256,7 @@
 
     function logout() {
         //Clear session storage *temp
-        var user = JSON.parse(sessionStorage.getItem("user"));
+        var user = sessionStorage.getItem("user");
         if (user) {
             window.sessionStorage.removeItem("user");
             window.location.href = "staffcode.html";
@@ -268,7 +271,7 @@
 
     //createUserWithEmailAndPassword
     import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
-    import { getDatabase, set, ref, update } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+    import { getDatabase, set, ref, update, child, get, onValue } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
 
     // TODO: Add SDKs for Firebase products that you want to use
     // https://firebase.google.com/docs/web/setup#available-libraries
@@ -296,6 +299,7 @@
     var account = localStorage.getItem("account");
     var pass = localStorage.getItem("pass");
 
+    //Sign In function
     signInWithEmailAndPassword(auth, account, pass)
         .then((userCredential) => {
             // Signed in 
@@ -317,7 +321,74 @@
             const errorCode = error.code;
             const errorMessage = error.message;
             console.log(errorCode + ' Bug. ' + errorMessage);
+            //Direct to login if login is outdated. (not staff code)
+            window.location.href = "login.html";
         });
+
+    onValue(ref(database, 'cash/balance'), (snapshot) => {
+        const data = snapshot.val();
+
+        //If balance is (NOT) just initialised
+        if (document.getElementById("balance").innerHTML != '') {
+            if (data - JSON.parse(document.getElementById("balance").innerHTML) > 0) {
+                document.getElementById("modifiedAmount").innerHTML = '(+' + (data - JSON.parse(document.getElementById("balance").innerHTML)).toFixed(2) + ')';
+            } else {
+                document.getElementById("modifiedAmount").innerHTML = '(' + (data - JSON.parse(document.getElementById("balance").innerHTML)).toFixed(2) + ')';
+            }
+            document.getElementById("balance").innerHTML = data.toFixed(2);
+        } else {
+            //Give balance a number
+            document.getElementById("balance").innerHTML = data.toFixed(2);
+        }
+
+    });
+
+    //Cash In
+    cashIn.addEventListener('click', (e) => {
+        if (document.getElementById("amount").value != 0 && document.getElementById("amount").value != null) {
+
+            get(child(ref(database), 'cash/balance'))
+                .then((snapshot) => {
+                    if (snapshot.exists()) {
+                        console.log(snapshot.val());
+
+                        update(ref(database, 'cash/'), {
+                            balance: snapshot.val() + JSON.parse(document.getElementById("amount").value)
+                        })
+                        //clear input
+                        document.getElementById("amount").value = "";
+                        document.getElementById("remark").value = "";
+
+                    } else {
+                        console.log("No data available");
+                    }
+                })
+
+        }
+    });
+
+    //Cash Out
+    cashOut.addEventListener('click', (e) => {
+        if (document.getElementById("amount").value != 0 && document.getElementById("amount").value != null) {
+
+            get(child(ref(database), 'cash/balance'))
+                .then((snapshot) => {
+                    if (snapshot.exists()) {
+
+                        update(ref(database, 'cash/'), {
+                            balance: snapshot.val() - JSON.parse(document.getElementById("amount").value)
+                        })
+                        //clear input
+                        document.getElementById("amount").value = "";
+                        document.getElementById("remark").value = "";
+
+                    } else {
+                        console.log("No data available");
+                    }
+                })
+
+        }
+    });
 
 </script>
 
