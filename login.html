@@ -106,6 +106,7 @@
                         console.log(user.uid + ' logged in.');
                         localStorage.setItem("account", account);
                         localStorage.setItem("pass", pass);
+                        sessionStorage.setItem("order", []);
                         window.location.href = "staffcode.html";
 
                     })
