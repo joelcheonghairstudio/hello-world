@@ -350,6 +350,7 @@
 
     });
 
+    //Auto refresh staff status
     var currentdate = new Date();
     var date = currentdate.getFullYear() + "/"
         + (currentdate.getMonth() + 1) + "/"
@@ -373,7 +374,12 @@
                 }
 
                 document.getElementById("clockIn").innerHTML = childSnapshot.key;
-                document.getElementById("clockOut").innerHTML = childSnapshot.child("end").val();
+
+                if (childSnapshot.child("end").val() != false) {
+                    document.getElementById("clockOut").innerHTML = childSnapshot.child("end").val();
+                } else {
+                    document.getElementById("clockOut").innerHTML = '';
+                }
 
             });
 

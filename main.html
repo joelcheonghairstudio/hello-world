@@ -250,14 +250,6 @@
         var user = sessionStorage.getItem("user");
         if (user) {
             document.getElementById("Account").innerHTML = user;
-
-            //employee attendance status
-            if (sessionStorage.getItem("status") == "active") {
-                document.getElementById("accStatus").className = "stActive detail";
-            } else if (sessionStorage.getItem("status") == null || sessionStorage.getItem("status") == "unactive") {
-                document.getElementById("accStatus").className = "stUnactive detail";
-            }
-
         } else {
 
             //session outdated
@@ -276,10 +268,6 @@
         //Direct to login if login is outdated. (not staff code)
         if (!localStorage.getItem("account")) {
             window.location.href = "login.html";
-        }
-
-        if (sessionStorage.getItem("status") == null) {
-            sessionStorage.setItem("status", "unactive");
         }
 
         if (sessionStorage.getItem("balance") == null) {
@@ -540,7 +528,7 @@
 
     //createUserWithEmailAndPassword
     import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
-    import { getDatabase, set, ref, update } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+    import { getDatabase, set, ref, update, onValue } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
 
     // TODO: Add SDKs for Firebase products that you want to use
     // https://firebase.google.com/docs/web/setup#available-libraries
@@ -593,6 +581,29 @@
             //Direct to login if login is outdated. (not staff code)
             window.location.href = "login.html";
         });
+
+    //Auto refresh staff status
+    var currentdate = new Date();
+    var date = currentdate.getFullYear() + "/"
+        + (currentdate.getMonth() + 1) + "/"
+        + currentdate.getDate();
+
+    onValue(ref(database, 'staffcode/' + sessionStorage.getItem('staffCode') + '/attendance/' + date), (snapshot) => {
+        if (snapshot.exists()) {
+            //Find unfinish clock-in - Active
+            var end = false;
+            snapshot.forEach(function (childSnapshot) {
+                if (childSnapshot.child("end").val() == false) {
+                    end = true;
+                    document.getElementById("accStatus").className = "stActive detail";
+                }
+            });
+            //If no unfinish clock-in - Unactive
+            if (end == false) {
+                document.getElementById("accStatus").className = "stUnactive detail";
+            }
+        }
+    });
 
 </script>
 

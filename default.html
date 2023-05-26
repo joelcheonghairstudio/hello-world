@@ -151,12 +151,6 @@
         var user = sessionStorage.getItem("user");
         if (user) {
             document.getElementById("Account").innerHTML = user;
-
-            if (sessionStorage.getItem("status") == "active") {
-                document.getElementById("accStatus").className = "stActive detail";
-            } else if (sessionStorage.getItem("status") == null || sessionStorage.getItem("status") == "unactive") {
-                document.getElementById("accStatus").className = "stUnactive detail";
-            }
         } else {
 
             //session outdated
@@ -248,6 +242,29 @@
 
             window.location.href = "login.html";
         });
+
+    //Auto refresh staff status
+    var currentdate = new Date();
+    var date = currentdate.getFullYear() + "/"
+        + (currentdate.getMonth() + 1) + "/"
+        + currentdate.getDate();
+
+    onValue(ref(database, 'staffcode/' + sessionStorage.getItem('staffCode') + '/attendance/' + date), (snapshot) => {
+        if (snapshot.exists()) {
+            //Find unfinish clock-in - Active
+            var end = false;
+            snapshot.forEach(function (childSnapshot) {
+                if (childSnapshot.child("end").val() == false) {
+                    end = true;
+                    document.getElementById("accStatus").className = "stActive detail";
+                }
+            });
+            //If no unfinish clock-in - Unactive
+            if (end == false) {
+                document.getElementById("accStatus").className = "stUnactive detail";
+            }
+        }
+    });
 
 </script>
 

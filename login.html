@@ -99,7 +99,7 @@
                     + ((currentdate.getSeconds() / 10 >= 1) ? currentdate.getSeconds() : "0" + currentdate.getSeconds());
 
                 update(ref(database, 'users/' + user.uid), {
-                    last_login: (date + " @ " + time),
+                    last_login: (date + "@" + time),
                 })
                     .then(() => {
                         // User login successfully!
