@@ -196,53 +196,7 @@
 </body>
 <script>
 
-    //database
-    var category = [
-        [
-            "Hair",
-            [
-                ["Cut", 5],
-                ["Color", 7],
-                ["Style 1", 8],
-                ["Style 2", 10],
-                ["Style 3", 11],
-                ["Style 4", 8],
-                ["Style 5", 9],
-                ["Style 6", 1000]
-            ]
-        ],
-        [
-            "Wash",
-            [
-                ["Warm", 8],
-                ["Cold", 7]
-            ]
-        ],
-        [
-            "Blow Hair",
-            [
-                ["Normal", 8],
-                ["Advanced", 10]
-            ]
-        ],
-        [
-            "Test1",
-            [
-                ["Test", 1]
-            ]
-        ],
-        [
-            "Test2",
-            [
-                ["Test", 1]
-            ]
-        ], [
-            "Test3",
-            [
-                ["Test", 1]
-            ]
-        ]
-    ];
+    var loading;
 
     //Start up
     window.onload = function () {
@@ -250,6 +204,21 @@
         var user = sessionStorage.getItem("user");
         if (user) {
             document.getElementById("Account").innerHTML = user;
+
+            // Loading animation
+            document.body.innerHTML += `
+                <div id="loading" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); height: 20px; width: 20px; border: rgb(0, 0, 0, 0.6) none 10px; border-top: solid; border-radius: 20px;">
+                </div>
+            `;
+            var rotate = 0;
+            loading = setInterval(() => {
+                document.getElementById("loading").style.transform = ("translate(-50%, -50%) rotate(" + rotate + "deg)");
+                rotate += 10;
+                if (rotate > 360) {
+                    rotate = 0;
+                }
+            }, 10);
+
         } else {
 
             //session outdated
@@ -269,28 +238,6 @@
             sessionStorage.setItem("balance", JSON.stringify(0));
         }
 
-        //initialise category list and item list
-        //Left and Right arrow
-        for (var i = 0; i < category.length; i++) {
-            document.getElementById("categoryList").innerHTML += `
-                <div class="category">
-                    <div id="right_${category[i][0]}" style="display: none; position: absolute; right: 30px; padding: 20px 2px 20px 2px; top: 7%;" onclick="document.getElementById('itemList_' + '${category[i][0]}').scrollBy(170, 0);">
-                        <div style="border-style: solid solid none none; height: 15px; width: 15px; border-width: 2px; transform: rotate(45deg);">
-                        </div>
-                    </div>
-                    <div id="left_${category[i][0]}" style="display: none; position: absolute; left: 30px; padding: 20px 2px 20px 2px; top: 7%;" onclick="document.getElementById('itemList_' + '${category[i][0]}').scrollBy(-170, 0);">
-                        <div style="border-style: solid solid none none; height: 15px; width: 15px; border-width: 2px; transform: rotate(225deg);">
-                        </div>
-                    </div>
-                    <div style="position: relative; left: 10px;">${category[i][0]}</div>
-                    <div id="itemList_${category[i][0]}" onscroll="advScr('${category[i][0]}');" style="font-size: 0px; white-space: nowrap; overflow: auto;">
-                    </div>
-                </div>
-            `;
-        }
-
-        //Set item list in category
-        updateItemList();
     }
 
     //Scroll function
@@ -302,32 +249,9 @@
         //console.log("Hi " + "itemList_" + elemId + " " + document.getElementById("itemList_" + elemId).scrollLeft);
     }
 
-    function updateItemList() {
-        //console.log(itemMax);
-        for (var i = 0; i < category.length; i++) {
-            document.getElementById("itemList_" + category[i][0]).innerHTML = '';
-
-            for (var j = 0; j < category[i][1].length; j++) {
-                document.getElementById("itemList_" + category[i][0]).innerHTML += `
-                    <div class="item" onclick="order(${i}, ${j});">
-                        ${category[i][1][j][0]}
-                        <br>
-                        RM ${category[i][1][j][1]}
-                    </div>
-                `;
-            }
-
-            //Detect if elements' total width is out of size
-            if (category[i][1].length * 170 > document.getElementById("itemList_" + category[i][0]).clientWidth) {
-                document.getElementById("right_" + category[i][0]).style.display = "block";
-                //console.log(category[i][1].length + " > " + document.getElementById("itemList_" + category[i][0]).clientWidth);
-            }
-        }
-    }
-
     //Retrieve item from array using index
-    function order(i, j) {
-        
+    function order(name, price, category) {
+
         document.getElementById("order").innerHTML += `
             <div style="position: absolute; left: 0px; top: 0px; height: 100%; width: 100%; z-index: 1; background-color: rgb(0, 0, 0, 0.3);" onclick="document.getElementById('order').innerHTML = '';"></div>
             
@@ -367,10 +291,7 @@
             `;
         }
 
-        if (i != null && j != null) {
-            var categoryName = category[i][0];
-            var name = category[i][1][j][0];
-            var price = category[i][1][j][1].toFixed(2);
+        if (name != null && price != null && category != null) {
 
             document.getElementById("newItemSpace").outerHTML += `
                 <div id="newItemSpace" style="margin-bottom: 50px;">
@@ -385,7 +306,7 @@
                             <td class="orderBorder" style="width: 100px;">Price(RM)</td>
                         <tr>
                     </table>
-                    <div id="addOrder" class="orderButton" onclick="addOrder('${name}', '${categoryName}', ${price});">
+                    <div id="addOrder" class="orderButton" onclick="addOrder('${name}', ${price}, '${category}');">
                         Add to order
                     </div>
                 </div>
@@ -395,8 +316,8 @@
                 <tr class="orderBorder">
                     <td class="orderBorder">1.</td>
                     <td class="orderBorder">${name}</td>
-                    <td class="orderBorder">${categoryName}</td>
-                    <td class="orderBorder" style="text-align: right;">${price}</td>
+                    <td class="orderBorder">${category}</td>
+                    <td class="orderBorder" style="text-align: right;">${price.toFixed(2)}</td>
                 </tr>
             `;
         }
@@ -406,15 +327,15 @@
 
         for (var i = 0; i < order.length; i++) {
             var name = order[i][0];
-            var categoryName = order[i][1];
-            var price = order[i][2].toFixed(2);
-            totalPrice += order[i][2];
+            var price = order[i][1].toFixed(2);
+            var category = order[i][2];
+            totalPrice += order[i][1];
 
             document.getElementById('orderList').innerHTML += `
                 <tr class="orderBorder">
                     <td class="orderBorder">${i + 1}.</td>
                     <td class="orderBorder">${name}</td>
-                    <td class="orderBorder">${categoryName}</td>
+                    <td class="orderBorder">${category}</td>
                     <td class="orderBorder" style="text-align: right;">${price}</td>
                 </tr>
             `;
@@ -430,7 +351,7 @@
     }
 
     //add item to order
-    function addOrder(name, categoryName, price) {
+    function addOrder(name, price, category) {
 
         //enable submit
         document.getElementById("submitOrder").outerHTML = `
@@ -441,7 +362,7 @@
 
         //get array from storage
         var order = JSON.parse(sessionStorage.getItem("order"));
-        order.push([name, categoryName, price]);
+        order.push([name, price, category]);
         sessionStorage.setItem("order", JSON.stringify(order));
         document.getElementById("addOrder").outerHTML = `
             <div id="addOrder" style="width: 100%; height: 30px; font-size: 26px; position: relative; margin-top: 20px; text-align: center;">
@@ -466,16 +387,16 @@
 
         for (var i = 0; i < order.length; i++) {
             var name = order[i][0];
-            var categoryName = order[i][1];
-            var price = order[i][2].toFixed(2);
-            totalPrice += order[i][2];
+            var price = order[i][1].toFixed(2);
+            var category = order[i][2];
+            totalPrice += order[i][1];
 
             if (i == order.length - 1) {
                 document.getElementById('orderList').innerHTML += `
                     <tr class="orderBorder" style="background-color: rgb(204, 255, 255);">
                         <td class="orderBorder">${i + 1}.</td>
                         <td class="orderBorder">${name}</td>
-                        <td class="orderBorder">${categoryName}</td>
+                        <td class="orderBorder">${category}</td>
                         <td class="orderBorder" style="text-align: right;">${price}</td>
                     </tr>
                 `;
@@ -484,7 +405,7 @@
                     <tr class="orderBorder">
                         <td class="orderBorder">${i + 1}.</td>
                         <td class="orderBorder">${name}</td>
-                        <td class="orderBorder">${categoryName}</td>
+                        <td class="orderBorder">${category}</td>
                         <td class="orderBorder" style="text-align: right;">${price}</td>
                     </tr>
                 `;
@@ -549,6 +470,11 @@
             // User is signed in, see docs for a list of available properties
             // https://firebase.google.com/docs/reference/js/auth.user
             console.log("[User Credential] " + user.uid);
+
+            // Remove loading animation
+            clearInterval(loading);
+            document.getElementById("loading").remove();
+
             // ...
         } else {
             // User is signed out
@@ -564,21 +490,63 @@
         + (currentdate.getMonth() + 1) + "/"
         + currentdate.getDate();
 
-    // onValue(ref(database, 'services/categories'), (snapshot) => {
-    //     if (snapshot.exists()) {
-    //         //Find services categories and loop
-    //         var end = false;
-    //         snapshot.forEach(function (childSnapshot) {
-    //             end = true;
-    //             console.log(childSnapshot.key);
-    //             console.log(childSnapshot.val());
-    //         });
-    //         //If services are empty
-    //         if (end == false) {
-    //             console.log("services are empty");
-    //         }
-    //     }
-    // });
+    //Setting up categories and items
+    onValue(ref(database, 'services/categories'), (snapshot) => {
+        if (snapshot.exists()) {
+
+            document.getElementById("categoryList").innerHTML = '';
+
+            //Find services categories and loop
+            var end = false;
+            snapshot.forEach(function (categorySnapshot) {
+
+                //initialise category list and item list
+                //Left and Right arrow
+                document.getElementById("categoryList").innerHTML += `
+                    <div class="category">
+                        <div id="right_${categorySnapshot.key}" style="display: none; position: absolute; right: 30px; padding: 20px 2px 20px 2px; top: 7%;" onclick="document.getElementById('itemList_' + '${categorySnapshot.key}').scrollBy(170, 0);">
+                            <div style="border-style: solid solid none none; height: 15px; width: 15px; border-width: 2px; transform: rotate(45deg);">
+                            </div>
+                        </div>
+                        <div id="left_${categorySnapshot.key}" style="display: none; position: absolute; left: 30px; padding: 20px 2px 20px 2px; top: 7%;" onclick="document.getElementById('itemList_' + '${categorySnapshot.key}').scrollBy(-170, 0);">
+                            <div style="border-style: solid solid none none; height: 15px; width: 15px; border-width: 2px; transform: rotate(225deg);">
+                            </div>
+                        </div>
+                        <div style="position: relative; left: 10px;">${categorySnapshot.key}</div>
+                        <div id="itemList_${categorySnapshot.key}" onscroll="advScr('${categorySnapshot.key}');" style="font-size: 0px; white-space: nowrap; overflow: auto;">
+                        </div>
+                    </div>
+                `;
+
+                // Category is available
+                end = true;
+
+                //Set item list in category
+                categorySnapshot.forEach(function (childSnapshot) {
+
+                    document.getElementById("itemList_" + categorySnapshot.key).innerHTML += `
+                        <div class="item" onclick="order('${childSnapshot.key}', ${childSnapshot.val()}, '${categorySnapshot.key}');">
+                            ${childSnapshot.key}
+                            <br>
+                            RM ${childSnapshot.val().toFixed(2)}
+                        </div>
+                    `;
+
+                })
+
+                //Detect if elements' total width is out of size
+                if (categorySnapshot.size * 170 > document.getElementById("itemList_" + categorySnapshot.key).clientWidth) {
+                    document.getElementById("right_" + categorySnapshot.key).style.display = "block";
+                }
+
+            });
+            //If services are empty
+            if (end == false) {
+                console.log("services are empty");
+            }
+
+        }
+    });
 
     // Staff Status
     onValue(ref(database, 'staffcode/' + sessionStorage.getItem('staffCode') + '/attendance/' + date), (snapshot) => {

@@ -143,7 +143,7 @@
 </body>
 <script>
 
-    //database
+    var loading;
 
     //Start up
     window.onload = function () {
@@ -151,6 +151,21 @@
         var user = sessionStorage.getItem("user");
         if (user) {
             document.getElementById("Account").innerHTML = user;
+
+            // Loading animation
+            document.body.innerHTML += `
+                <div id="loading" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); height: 20px; width: 20px; border: rgb(0, 0, 0, 0.6) none 10px; border-top: solid; border-radius: 20px;">
+                </div>
+            `;
+            var rotate = 0;
+            loading = setInterval(() => {
+                document.getElementById("loading").style.transform = ("translate(-50%, -50%) rotate(" + rotate + "deg)");
+                rotate += 10;
+                if (rotate > 360) {
+                    rotate = 0;
+                }
+            }, 10);
+
         } else {
 
             //session outdated
@@ -216,6 +231,11 @@
             // User is signed in, see docs for a list of available properties
             // https://firebase.google.com/docs/reference/js/auth.user
             console.log("[User Credential] " + user.uid);
+
+            // Remove loading animation
+            clearInterval(loading);
+            document.getElementById("loading").remove();
+
             // ...
         } else {
             // User is signed out

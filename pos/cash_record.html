@@ -51,9 +51,8 @@
 
         .cashButton {
             user-select: none;
-            position: absolute;
             border-radius: 5px;
-            width: 170px;
+            width: 35%;
             text-align: center;
             margin-top: 30px;
             background-color: rgb(230, 230, 230);
@@ -135,10 +134,10 @@
                         style="font-size: 25px; border: none; outline: none; border-bottom: 1px solid #ccc;">
                 </div>
                 <div style="position: relative; height: 88px; margin-top: 50px;">
-                    <div id="cashIn" class="cashButton" style="left: 0%;">
+                    <div id="cashIn" class="cashButton" style="float: left;">
                         Cash in (+)
                     </div>
-                    <div id="cashOut" class="cashButton" style="right: 0%;">
+                    <div id="cashOut" class="cashButton" style="float: right;">
                         Cash out (-)
                     </div>
                 </div>
@@ -196,7 +195,7 @@
 
 <script>
 
-    //database
+    var loading;
 
     //Start up
     window.onload = function () {
@@ -204,6 +203,21 @@
         var user = sessionStorage.getItem("user");
         if (user) {
             document.getElementById("Account").innerHTML = user;
+
+            // Loading animation
+            document.body.innerHTML += `
+                <div id="loading" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); height: 20px; width: 20px; border: rgb(0, 0, 0, 0.6) none 10px; border-top: solid; border-radius: 20px;">
+                </div>
+            `;
+            var rotate = 0;
+            loading = setInterval(() => {
+                document.getElementById("loading").style.transform = ("translate(-50%, -50%) rotate(" + rotate + "deg)");
+                rotate += 10;
+                if (rotate > 360) {
+                    rotate = 0;
+                }
+            }, 10);
+
         } else {
 
             //session outdated
@@ -287,6 +301,11 @@
             // User is signed in, see docs for a list of available properties
             // https://firebase.google.com/docs/reference/js/auth.user
             console.log("[User Credential] " + user.uid);
+
+            // Remove loading animation
+            clearInterval(loading);
+            document.getElementById("loading").remove();
+            
             // ...
         } else {
             // User is signed out
