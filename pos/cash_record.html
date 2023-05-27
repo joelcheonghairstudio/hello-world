@@ -218,6 +218,10 @@
                 }
             }, 10);
 
+            setTimeout(() => {
+                clearInterval(loading);
+            }, 3000);
+
         } else {
 
             //session outdated
@@ -305,7 +309,7 @@
             // Remove loading animation
             clearInterval(loading);
             document.getElementById("loading").remove();
-            
+
             // ...
         } else {
             // User is signed out

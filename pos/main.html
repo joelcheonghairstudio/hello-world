@@ -219,6 +219,10 @@
                 }
             }, 10);
 
+            setTimeout(() => {
+                clearInterval(loading);
+            }, 3000);
+
         } else {
 
             //session outdated
