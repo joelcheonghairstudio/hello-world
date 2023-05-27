@@ -237,30 +237,6 @@
         }
     }
 
-    //Cash in and out
-    function cashRecord(amount, remark) {
-
-        if (JSON.parse(amount) != 0 && JSON.parse(amount) != null) {
-
-            var balance = JSON.parse(sessionStorage.getItem("balance")) + JSON.parse(amount);
-
-            //modify balance from storage
-            sessionStorage.setItem("balance", JSON.stringify(balance));
-            document.getElementById("balance").innerHTML = balance.toFixed(2);
-
-            //clear input
-            document.getElementById("amount").value = "";
-            document.getElementById("remark").value = "";
-
-            if (JSON.parse(amount) > 0) {
-                document.getElementById("modifiedAmount").innerHTML = " (+" + JSON.parse(amount).toFixed(2) + ")";
-            } else {
-                document.getElementById("modifiedAmount").innerHTML = " (" + JSON.parse(amount).toFixed(2) + ")";
-            }
-
-        }
-    }
-
     function logout() {
         //Clear session storage *temp
         var user = sessionStorage.getItem("user");

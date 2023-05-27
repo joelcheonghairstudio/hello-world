@@ -55,8 +55,6 @@
 </body>
 <script>
 
-    var loading;
-
     //Start up
     window.onload = function () {
         //Get data from session storage
@@ -64,21 +62,6 @@
         if (user) {
             alertFunc(user + " is logged out.");
             window.sessionStorage.removeItem("user");
-
-            // Loading animation
-            var rotate = 0;
-            loading = setInterval(() => {
-                document.getElementById("loading").style.transform = ("translate(-50%, -50%) rotate(" + rotate + "deg)");
-                rotate += 10;
-                if (rotate > 360) {
-                    rotate = 0;
-                }
-            }, 10);
-
-            setTimeout(() => {
-                clearInterval(loading);
-            }, 3000);
-
         }
     }
 
@@ -180,10 +163,6 @@
             // User is signed in, see docs for a list of available properties
             // https://firebase.google.com/docs/reference/js/auth.user
             console.log("[User Credential] " + user.uid);
-
-            // Remove loading animation
-            clearInterval(loading);
-            document.getElementById("loading").remove();
 
             // ...
         } else {
