@@ -217,11 +217,6 @@
                 </div>
             `;
         }
-
-        //Direct to login if login is outdated. (not staff code)
-        if (!localStorage.getItem("account")) {
-            window.location.href = "login.html";
-        }
     }
 
     //Cash in and out
@@ -264,7 +259,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
 
     //createUserWithEmailAndPassword
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
     import { getDatabase, set, ref, update, child, get, onValue } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
 
     // TODO: Add SDKs for Firebase products that you want to use
@@ -286,38 +281,20 @@
     const auth = getAuth();
     const database = getDatabase(app);
 
-    //IMPORTANTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
-    //LOGIN AGAIN WHEN PAGE SWITCH
-
-    //Retrieve input
-    var account = localStorage.getItem("account");
-    var pass = localStorage.getItem("pass");
-
-    //Sign In function
-    signInWithEmailAndPassword(auth, account, pass)
-        .then((userCredential) => {
-            // Signed in 
-            const user = userCredential.user;
-
-            var lgDate = new Date();
-            update(ref(database, 'users/' + user.uid), {
-            })
-                .then(() => {
-                    // Switch page login
-                    console.log(user.uid + ' is currently logged in.');
-                })
-                .catch((error) => {
-                    // The write failed...
-                    console.log(error);
-                });
-        })
-        .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            console.log(errorCode + ' Bug. ' + errorMessage);
-            //Direct to login if login is outdated. (not staff code)
-            window.location.href = "login.html";
-        });
+    // If logged out somewhere
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // User is signed in, see docs for a list of available properties
+            // https://firebase.google.com/docs/reference/js/auth.user
+            console.log("[User Credential] " + user.uid);
+            // ...
+        } else {
+            // User is signed out
+            // ...
+            alert("Oh no, you have been signed out.");
+            window.location.href = "login.html"
+        }
+    });
 
     onValue(ref(database, 'cash/balance'), (snapshot) => {
         const data = snapshot.val();

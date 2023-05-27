@@ -210,12 +210,20 @@
     const auth = getAuth();
     const database = getDatabase(app);
 
-    //IMPORTANTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
-    //LOGIN AGAIN WHEN PAGE SWITCH
-
-    //Retrieve input
-    var account = localStorage.getItem("account");
-    var pass = localStorage.getItem("pass");
+    // If logged out somewhere
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // User is signed in, see docs for a list of available properties
+            // https://firebase.google.com/docs/reference/js/auth.user
+            console.log("[User Credential] " + user.uid);
+            // ...
+        } else {
+            // User is signed out
+            // ...
+            alert("Oh no, you have been signed out.");
+            window.location.href = "login.html"
+        }
+    });
 
     //Sign In function
     signInWithEmailAndPassword(auth, account, pass)
