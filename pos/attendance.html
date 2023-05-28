@@ -120,6 +120,9 @@
 
 <body>
 
+    <div id="loading" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); height: 20px; width: 20px; border: rgb(0, 0, 0, 0.6) none 10px; border-top: solid; border-radius: 20px; z-index: 1;">
+    </div>
+
     <div id="main"
         style="position: absolute; width: 90%; height: 85%; top: 50%; left: 50%; transform: translate(-46%, -48%); overflow: auto;">
         <div class="content">
@@ -211,11 +214,7 @@
             document.getElementById("Account").innerHTML = user;
             document.getElementById("employeeName").innerHTML = user;
 
-            // Loading animation
-            document.body.innerHTML += `
-                <div id="loading" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); height: 20px; width: 20px; border: rgb(0, 0, 0, 0.6) none 10px; border-top: solid; border-radius: 20px;">
-                </div>
-            `;
+            //Loading animation
             var rotate = 0;
             loading = setInterval(() => {
                 document.getElementById("loading").style.transform = ("translate(-50%, -50%) rotate(" + rotate + "deg)");
@@ -303,6 +302,10 @@
         }
     });
 
+    document.getElementById("clockInOut").addEventListener("click", (e)=>{
+        console.log('Hi');
+    });
+
     //Create attendance and append
     clockInOut.addEventListener('click', (e) => {
 
@@ -317,6 +320,7 @@
 
         get(child(ref(database), 'staffcode/' + sessionStorage.getItem('staffCode') + '/attendance/' + date)).then((snapshot) => {
             if (snapshot.exists()) {
+                console.log('test');
 
                 //Find unfinish clock-in
                 var end = false;
