@@ -503,11 +503,11 @@
                 //Left and Right arrow
                 document.getElementById("categoryList").innerHTML += `
                     <div class="category">
-                        <div id="right_${categorySnapshot.key}" style="display: none; position: absolute; right: 30px; padding: 20px 2px 20px 2px; top: 7%;" onclick="document.getElementById('itemList_' + '${categorySnapshot.key}').scrollBy(170, 0);">
+                        <div id="right_${categorySnapshot.key}" style="display: none; position: absolute; right: 30px; padding: 20px 2px 20px 2px; transform: translate(0%, 78%);" onclick="document.getElementById('itemList_' + '${categorySnapshot.key}').scrollBy(170, 0);">
                             <div style="border-style: solid solid none none; height: 15px; width: 15px; border-width: 2px; transform: rotate(45deg);">
                             </div>
                         </div>
-                        <div id="left_${categorySnapshot.key}" style="display: none; position: absolute; left: 30px; padding: 20px 2px 20px 2px; top: 7%;" onclick="document.getElementById('itemList_' + '${categorySnapshot.key}').scrollBy(-170, 0);">
+                        <div id="left_${categorySnapshot.key}" style="display: none; position: absolute; left: 30px; padding: 20px 2px 20px 2px; transform: translate(0%, 78%);" onclick="document.getElementById('itemList_' + '${categorySnapshot.key}').scrollBy(-170, 0);">
                             <div style="border-style: solid solid none none; height: 15px; width: 15px; border-width: 2px; transform: rotate(225deg);">
                             </div>
                         </div>
