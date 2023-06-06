@@ -132,7 +132,8 @@
 
 <body>
 
-    <div id="loading" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); height: 20px; width: 20px; border: rgb(0, 0, 0, 0.6) none 10px; border-top: solid; border-radius: 20px; z-index: 1;">
+    <div id="loading"
+        style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); height: 20px; width: 20px; border: rgb(0, 0, 0, 0.6) none 10px; border-top: solid; border-radius: 20px; z-index: 1;">
     </div>
 
     <div id="main"
@@ -143,7 +144,7 @@
     </div>
 
     <div id="menu"
-        style="width: 70px; height: 100vh; background-image: linear-gradient(rgb(240, 240, 240), lightgray); top: 50%; left: 1.9%; position: absolute; transform: translate(0%, -50%);">
+        style="width: 70px; height: 100vh; background-image: linear-gradient(rgb(240, 240, 240), lightgray); top: 50%; left: calc(2.1% - 10px); position: absolute; transform: translate(0%, -50%);">
         <div style="top: 50%; position: relative; transform: translate(0%, -50%);">
             <div class="menuSlot active">
                 <div style="height: 6px;"></div>
@@ -163,8 +164,8 @@
             <div class="menuSlot active" onclick="window.location.href = 'cash_record.html';">
                 <img src="png/money_bag.png" style="width: 50px;" />
             </div>
-            <div class="menuSlot">
-
+            <div class="menuSlot active" onclick="window.location.href = 'refund.html';">
+                <img src="png/refund.png" style="width: 50px;" />
             </div>
             <div class="menuSlot">
 
@@ -281,10 +282,10 @@
 
         `;
 
-        //If order is empty
+        //If order is not empty
         if (JSON.parse(sessionStorage.getItem("order")).length != 0 && JSON.parse(sessionStorage.getItem("order")).length != null) {
             document.getElementById("submitOrder").outerHTML = `
-                <div id="submitOrder" class="orderButton" onclick="submitOrder();">
+                <div id="submitOrder" class="orderButton" onclick="window.location.href = 'order.html'">
                     Submit
                 </div>
             `;
@@ -305,7 +306,7 @@
                             <td class="orderBorder" style="width: 100px;">Price(RM)</td>
                         <tr>
                     </table>
-                    <div id="addOrder" class="orderButton" onclick="addOrder('${name}', ${price}, '${category}');">
+                    <div id="addOrder" class="orderButton" onclick="addOrder('${name}', ${price}, '${category}')">
                         Add to order
                     </div>
                 </div>
@@ -354,7 +355,7 @@
 
         //enable submit
         document.getElementById("submitOrder").outerHTML = `
-            <div id="submitOrder" class="orderButton" onclick="submitOrder();">
+            <div id="submitOrder" class="orderButton" onclick="window.location.href = 'order.html';">
                 Submit
             </div>
         `;
@@ -420,10 +421,6 @@
         `;
     }
 
-    function submitOrder() {
-
-    }
-
     function logout() {
         //Clear session storage *temp
         var user = sessionStorage.getItem("user");
@@ -441,7 +438,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
 
     //createUserWithEmailAndPassword
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
     import { getDatabase, set, ref, update, onValue } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
 
     // TODO: Add SDKs for Firebase products that you want to use

@@ -94,11 +94,11 @@
 
     <div id="main"
         style="position: absolute; width: 90%; height: 85%; top: 50%; left: 50%; transform: translate(-46%, -48%); overflow: auto;">
-
+        <div class="content"></div>
     </div>
 
     <div id="menu"
-        style="width: 70px; height: 100vh; background-image: linear-gradient(rgb(240, 240, 240), lightgray); top: 50%; left: 1.9%; position: absolute; transform: translate(0%, -50%);">
+        style="width: 70px; height: 100vh; background-image: linear-gradient(rgb(240, 240, 240), lightgray); top: 50%; left: calc(2.1% - 10px); position: absolute; transform: translate(0%, -50%);">
         <div style="top: 50%; position: relative; transform: translate(0%, -50%);">
             <div class="menuSlot active">
                 <div style="height: 6px;"></div>
@@ -109,7 +109,7 @@
                 <div style="height: 8px; background-color: rgb(54, 54, 54); width: 50px;"></div>
                 <div style="height: 6px;"></div>
             </div>
-            <div class="menuSlot" onclick="window.location.href = 'main.html';">
+            <div class="menuSlot active" onclick="window.location.href = 'main.html';">
                 <img src="png/home.png" style="width: 50px;" />
             </div>
             <div class="menuSlot active" onclick="window.location.href = 'attendance.html';">
@@ -118,8 +118,8 @@
             <div class="menuSlot active" onclick="window.location.href = 'cash_record.html';">
                 <img src="png/money_bag.png" style="width: 50px;" />
             </div>
-            <div class="menuSlot">
-
+            <div class="menuSlot active" onclick="window.location.href = 'refund.html';">
+                <img src="png/refund.png" style="width: 50px;" />
             </div>
             <div class="menuSlot">
 
@@ -201,8 +201,8 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
 
     //createUserWithEmailAndPassword
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
-    import { getDatabase, set, ref, update } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+    import { getDatabase, set, ref, update, onValue } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
 
     // TODO: Add SDKs for Firebase products that you want to use
     // https://firebase.google.com/docs/web/setup#available-libraries
@@ -242,32 +242,6 @@
             window.location.href = "login.html"
         }
     });
-
-    //Sign In function
-    signInWithEmailAndPassword(auth, account, pass)
-        .then((userCredential) => {
-            // Signed in 
-            const user = userCredential.user;
-
-            var lgDate = new Date();
-            update(ref(database, 'users/' + user.uid), {
-            })
-                .then(() => {
-                    // Switch page login
-                    console.log(user.uid + ' is currently logged in.');
-                })
-                .catch((error) => {
-                    // The write failed...
-                    console.log(error);
-                });
-        })
-        .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            console.log(errorMessage);
-
-            window.location.href = "login.html";
-        });
 
     //Auto refresh staff status
     var currentdate = new Date();

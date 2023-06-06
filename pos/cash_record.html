@@ -115,7 +115,8 @@
 
 <body>
 
-    <div id="loading" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); height: 20px; width: 20px; border: rgb(0, 0, 0, 0.6) none 10px; border-top: solid; border-radius: 20px; z-index: 1;">
+    <div id="loading"
+        style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); height: 20px; width: 20px; border: rgb(0, 0, 0, 0.6) none 10px; border-top: solid; border-radius: 20px; z-index: 1;">
     </div>
 
     <div id="main"
@@ -149,7 +150,7 @@
     </div>
 
     <div id="menu"
-        style="width: 70px; height: 100vh; background-image: linear-gradient(rgb(240, 240, 240), lightgray); top: 50%; left: 1.9%; position: absolute; transform: translate(0%, -50%);">
+        style="width: 70px; height: 100vh; background-image: linear-gradient(rgb(240, 240, 240), lightgray); top: 50%; left: calc(2.1% - 10px); position: absolute; transform: translate(0%, -50%);">
         <div style="top: 50%; position: relative; transform: translate(0%, -50%);">
             <div class="menuSlot active">
                 <div style="height: 6px;"></div>
@@ -169,8 +170,8 @@
             <div class="menuSlot now">
                 <img src="png/money_bag.png" style="width: 50px;" />
             </div>
-            <div class="menuSlot">
-
+            <div class="menuSlot active" onclick="window.location.href = 'refund.html';">
+                <img src="png/refund.png" style="width: 50px;" />
             </div>
             <div class="menuSlot">
 
@@ -314,48 +315,101 @@
 
     //Cash In
     cashIn.addEventListener('click', (e) => {
-        if (document.getElementById("amount").value != 0 && document.getElementById("amount").value != null) {
 
-            get(child(ref(database), 'cash/balance'))
-                .then((snapshot) => {
-                    if (snapshot.exists()) {
-                        console.log(snapshot.val());
+        //Blank remark is not allowed
+        if (document.getElementById("remark").value == "") {
+            document.getElementById("remark").style.borderBottomColor = "red";
+        } else {
 
-                        update(ref(database, 'cash/'), {
-                            balance: snapshot.val() + JSON.parse(document.getElementById("amount").value)
-                        })
-                        //clear input
-                        document.getElementById("amount").value = "";
-                        document.getElementById("remark").value = "";
+            if (document.getElementById("amount").value != 0 && document.getElementById("amount").value != null) {
 
-                    } else {
-                        console.log("No data available");
-                    }
-                })
+                get(child(ref(database), 'cash/balance'))
+                    .then((snapshot) => {
+                        if (snapshot.exists()) {
 
+                            //Update balance
+                            update(ref(database, 'cash/'), {
+                                balance: snapshot.val() + JSON.parse(document.getElementById("amount").value)
+                            })
+
+                            //Initialize date and time
+                            var currentdate = new Date();
+                            var date = currentdate.getFullYear() + "/"
+                                + (currentdate.getMonth() + 1) + "/"
+                                + currentdate.getDate();
+
+                            var time = ((currentdate.getHours() / 10 >= 1) ? currentdate.getHours() : "0" + currentdate.getHours()) + ":"
+                                + ((currentdate.getMinutes() / 10 >= 1) ? currentdate.getMinutes() : "0" + currentdate.getMinutes()) + ":"
+                                + ((currentdate.getSeconds() / 10 >= 1) ? currentdate.getSeconds() : "0" + currentdate.getSeconds());
+
+                            //Add balance record
+                            set(ref(database, 'cash/' + date + '/' + time), {
+                                staffCode: sessionStorage.getItem("staffCode"),
+                                staffName: sessionStorage.getItem("user"),
+                                modified: '+' + JSON.parse(document.getElementById("amount").value)
+                            })
+
+                            //clear input
+                            document.getElementById("amount").value = "";
+                            document.getElementById("remark").value = "";
+                            document.getElementById("remark").style.borderBottomColor = "#ccc";
+
+                        } else {
+                            console.log("No data available");
+                        }
+                    })
+
+            }
         }
     });
 
     //Cash Out
     cashOut.addEventListener('click', (e) => {
-        if (document.getElementById("amount").value != 0 && document.getElementById("amount").value != null) {
 
-            get(child(ref(database), 'cash/balance'))
-                .then((snapshot) => {
-                    if (snapshot.exists()) {
+        //Blank remark is not allowed
+        if (document.getElementById("remark").value == "") {
+            document.getElementById("remark").style.borderBottomColor = "red";
+        } else {
 
-                        update(ref(database, 'cash/'), {
-                            balance: snapshot.val() - JSON.parse(document.getElementById("amount").value)
-                        })
-                        //clear input
-                        document.getElementById("amount").value = "";
-                        document.getElementById("remark").value = "";
+            if (document.getElementById("amount").value != 0 && document.getElementById("amount").value != null) {
 
-                    } else {
-                        console.log("No data available");
-                    }
-                })
+                get(child(ref(database), 'cash/balance'))
+                    .then((snapshot) => {
+                        if (snapshot.exists()) {
 
+                            update(ref(database, 'cash/'), {
+                                balance: snapshot.val() - JSON.parse(document.getElementById("amount").value)
+                            })
+
+                            //Initialize date and time
+                            var currentdate = new Date();
+                            var date = currentdate.getFullYear() + "/"
+                                + (currentdate.getMonth() + 1) + "/"
+                                + currentdate.getDate();
+
+                            var time = ((currentdate.getHours() / 10 >= 1) ? currentdate.getHours() : "0" + currentdate.getHours()) + ":"
+                                + ((currentdate.getMinutes() / 10 >= 1) ? currentdate.getMinutes() : "0" + currentdate.getMinutes()) + ":"
+                                + ((currentdate.getSeconds() / 10 >= 1) ? currentdate.getSeconds() : "0" + currentdate.getSeconds());
+
+                            //Add balance record
+                            set(ref(database, 'cash/' + date + '/' + time), {
+                                modified: '-' + JSON.parse(document.getElementById("amount").value),
+                                remark: document.getElementById("remark").value,
+                                staffCode: sessionStorage.getItem("staffCode"),
+                                staffName: sessionStorage.getItem("user")
+                            })
+
+                            //clear input
+                            document.getElementById("amount").value = "";
+                            document.getElementById("remark").value = "";
+                            document.getElementById("remark").style.borderBottomColor = "#ccc";
+
+                        } else {
+                            console.log("No data available");
+                        }
+                    })
+
+            }
         }
     });
 
