@@ -49,6 +49,12 @@
             margin: 10px;
         }
 
+        .orderBorder {
+            border: 1px solid #dadada;
+            font-size: 20px;
+            padding: 0px 5px 0px 5px;
+        }
+
         .stActive {
             border-radius: 20px;
             height: 20px;
@@ -89,12 +95,26 @@
 
 <body>
 
-    <div id="loading" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); height: 20px; width: 20px; border: rgb(0, 0, 0, 0.6) none 10px; border-top: solid; border-radius: 20px; z-index: 1;">
+    <div id="loading"
+        style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); height: 20px; width: 20px; border: rgb(0, 0, 0, 0.6) none 10px; border-top: solid; border-radius: 20px; z-index: 1;">
     </div>
 
     <div id="main"
         style="position: absolute; width: 90%; height: 85%; top: 50%; left: 50%; transform: translate(-46%, -48%); overflow: auto;">
-        <div class="content"></div>
+        <div class="content">
+            <div style="margin: 10px;">
+                <table style="border-collapse: collapse; width: 100%; position: relative; margin-top: 30px;">
+                    <tr class="orderBorder">
+                        <td class="orderBorder" id="tDate" style="width: 25%">Date</td>
+                        <td class="orderBorder" id="tTime" style="width: 25%">Time</td>
+                        <td class="orderBorder" id="tOrderID" style="width: 25%">Order ID</td>
+                        <td class="orderBorder" id="tTotalPrice" style="width: 25%;">Total Price(RM)</td>
+                    <tr>
+                </table>
+                <table id="listOrder" style="border-collapse: collapse; width: 100%; position: relative;">
+                </table>
+            </div>
+        </div>
     </div>
 
     <div id="menu"
@@ -202,7 +222,7 @@
 
     //createUserWithEmailAndPassword
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
-    import { getDatabase, set, ref, update, onValue } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+    import { getDatabase, set, ref, update, onValue, query, orderByChild, orderByKey } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
 
     // TODO: Add SDKs for Firebase products that you want to use
     // https://firebase.google.com/docs/web/setup#available-libraries
@@ -265,6 +285,65 @@
             }
         }
     });
+
+    tDate.addEventListener('click', (e) => {
+        sortOrder('date');
+    });
+
+    tTime.addEventListener('click', (e) => {
+        sortOrder('time');
+    });
+
+    tOrderID.addEventListener('click', (e) => {
+        sortOrder('orderID');
+    });
+
+    tTotalPrice.addEventListener('click', (e) => {
+        sortOrder('totalPrice');
+    });
+
+    function sortOrder(sortType) {
+
+        function updateList(childSnapshot) {
+            document.getElementById('listOrder').innerHTML += `
+                <tr class="orderBorder">
+                    <td class="orderBorder" style="width: 25%">${childSnapshot.val().date}</td>
+                    <td class="orderBorder" style="width: 25%">${childSnapshot.val().time}</td>
+                    <td class="orderBorder" style="width: 25%">${childSnapshot.key}</td>
+                    <td class="orderBorder" style="width: 25%">${childSnapshot.val().totalPrice.toFixed(2)}</td>
+                <tr>
+            `;
+        }
+
+        if (sortType == 'orderID') {
+
+            //Reset list
+            document.getElementById('listOrder').innerHTML = '';
+
+            //Get list of order
+            onValue(ref(database, 'staffcode/' + sessionStorage.getItem('staffCode') + '/order/'), (snapshot) => {
+                snapshot.forEach((childSnapshot) => {
+                    updateList(childSnapshot);
+                })
+            }, {
+                onlyOnce: true
+            });
+        } else {
+
+            //Reset list
+            document.getElementById('listOrder').innerHTML = '';
+
+            //Get list of order
+            onValue(query(ref(database, 'staffcode/' + sessionStorage.getItem('staffCode') + '/order/'), orderByChild(sortType)), (snapshot) => {
+                snapshot.forEach((childSnapshot) => {
+                    updateList(childSnapshot);
+                })
+            }, {
+                onlyOnce: true
+            });
+        }
+
+    }
 
 </script>
 

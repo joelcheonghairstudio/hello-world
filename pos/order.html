@@ -380,9 +380,10 @@
             + ((currentdate.getSeconds() / 10 >= 1) ? currentdate.getSeconds() : "0" + currentdate.getSeconds());
 
         //Upload order data
-        set(ref(database, 'staffcode/' + sessionStorage.getItem('staffCode') + '/order/' + date + '/' + time), {
-            orderID: oID,
+        set(ref(database, 'staffcode/' + sessionStorage.getItem('staffCode') + '/order/' + oID), {
+            date: date,
             orderList: sessionStorage.getItem("order"),
+            time: time,
             totalPrice: totalPrice
         })
 
