@@ -105,10 +105,12 @@
             <div style="margin: 10px;">
                 <table style="border-collapse: collapse; width: 100%; position: relative; margin-top: 30px;">
                     <tr class="orderBorder">
-                        <td class="orderBorder" id="tDate" style="width: 25%">Date</td>
-                        <td class="orderBorder" id="tTime" style="width: 25%">Time</td>
-                        <td class="orderBorder" id="tOrderID" style="width: 25%">Order ID</td>
-                        <td class="orderBorder" id="tTotalPrice" style="width: 25%;">Total Price(RM)</td>
+                        <td class="orderBorder" id="tDate" style="width: 24%; user-select: none;">Date</td>
+                        <td class="orderBorder" id="tTime" style="width: 24%; user-select: none;">Time</td>
+                        <td class="orderBorder" id="tOrderID" style="width: 24%; user-select: none;">Order ID</td>
+                        <td class="orderBorder" id="tTotalPrice" style="width: 24%; user-select: none;">Total Price(RM)
+                        </td>
+                        <td class="orderBorder" style="width: 4%;"></td>
                     <tr>
                 </table>
                 <table id="listOrder" style="border-collapse: collapse; width: 100%; position: relative;">
@@ -286,6 +288,10 @@
         }
     });
 
+    //Default list order sorting
+    sortOrder('date');
+
+    //Event listener for sorting
     tDate.addEventListener('click', (e) => {
         sortOrder('date');
     });
@@ -304,24 +310,55 @@
 
     function sortOrder(sortType) {
 
+        var cDate, cTime, cOrderID, cTotalPrice;
+        switch (sortType) {
+            case 'date':
+                cDate = 'rgb(245, 245, 245)';
+                break;
+
+            case 'time':
+                cTime = 'rgb(245, 245, 245)';
+                break;
+
+            case 'orderID':
+                cOrderID = 'rgb(245, 245, 245)';
+                break;
+
+            case 'totalPrice':
+                cTotalPrice = 'rgb(245, 245, 245)';
+                break;
+
+            default:
+                console.log("Error!");
+                break;
+        }
+
+        //Sorting interaction
+        document.getElementById('tDate').style.backgroundColor = '';
+        document.getElementById('tTime').style.backgroundColor = '';
+        document.getElementById('tOrderID').style.backgroundColor = '';
+        document.getElementById('tTotalPrice').style.backgroundColor = '';
+
+        document.getElementById("t" + sortType.charAt(0).toUpperCase() + sortType.slice(1)).style.backgroundColor = 'rgb(245, 245, 245)';
+
         function updateList(childSnapshot) {
             document.getElementById('listOrder').innerHTML += `
                 <tr class="orderBorder">
-                    <td class="orderBorder" style="width: 25%">${childSnapshot.val().date}</td>
-                    <td class="orderBorder" style="width: 25%">${childSnapshot.val().time}</td>
-                    <td class="orderBorder" style="width: 25%">${childSnapshot.key}</td>
-                    <td class="orderBorder" style="width: 25%">${childSnapshot.val().totalPrice.toFixed(2)}</td>
+                    <td class="orderBorder" style="width: 24%; background-color: ${cDate}">${childSnapshot.val().date}</td>
+                    <td class="orderBorder" style="width: 24%; background-color: ${cTime}">${childSnapshot.val().time}</td>
+                    <td class="orderBorder" style="width: 24%; background-color: ${cOrderID}">${childSnapshot.key}</td>
+                    <td class="orderBorder" style="width: 24%; background-color: ${cTotalPrice}">${childSnapshot.val().totalPrice.toFixed(2)}</td>
+                    <td class="orderBorder" style="width: 4%; text-align: center;"><img src="png/refund_small.png" style="width: 22px;"></td>
                 <tr>
             `;
         }
 
         if (sortType == 'orderID') {
-
             //Reset list
             document.getElementById('listOrder').innerHTML = '';
 
             //Get list of order
-            onValue(ref(database, 'staffcode/' + sessionStorage.getItem('staffCode') + '/order/'), (snapshot) => {
+            onValue(query(ref(database, 'staffcode/' + sessionStorage.getItem('staffCode') + '/order/'), orderByKey()), (snapshot) => {
                 snapshot.forEach((childSnapshot) => {
                     updateList(childSnapshot);
                 })
@@ -329,7 +366,6 @@
                 onlyOnce: true
             });
         } else {
-
             //Reset list
             document.getElementById('listOrder').innerHTML = '';
 
