@@ -100,21 +100,44 @@
     </div>
 
     <div id="main"
-        style="position: absolute; width: 90%; height: 85%; top: 50%; left: 50%; transform: translate(-46%, -48%); overflow: auto;">
-        <div class="content">
-            <div style="margin: 10px;">
-                <table style="border-collapse: collapse; width: 100%; position: relative; margin-top: 30px;">
-                    <tr class="orderBorder">
-                        <td class="orderBorder" id="tDate" style="width: 24%; user-select: none;">Date</td>
-                        <td class="orderBorder" id="tTime" style="width: 24%; user-select: none;">Time</td>
-                        <td class="orderBorder" id="tOrderID" style="width: 24%; user-select: none;">Order ID</td>
-                        <td class="orderBorder" id="tTotalPrice" style="width: 24%; user-select: none;">Total Price(RM)
-                        </td>
-                        <td class="orderBorder" style="width: 4%;"></td>
-                    <tr>
-                </table>
-                <table id="listOrder" style="border-collapse: collapse; width: 100%; position: relative;">
-                </table>
+        style="position: absolute; width: 90%; height: 85%; top: 50%; left: 50%; transform: translate(-46%, -48%);">
+        <div class="content" style="height: 95%;">
+            <div style="margin: 10px; height: 100%;">
+
+                <div style="margin: 10px; margin-bottom: 30px;">
+                    List per <input type="number" id="sortLimit" value="10" style="width: 50px; font-size: 20px;"
+                        onfocusout="if (this.value == 0 || this.value > 100) {this.value = 10;}">
+                    <div style="float: right;">
+                        Year <input type="number" id="sYear" style="width: 70px; font-size: 20px;">
+                        Month <input type="number" id="sMonth" style="width: 50px; font-size: 20px;">
+                        Day <input type="number" id="sDay" value="17" style="width: 50px; font-size: 20px;">
+                    </div>
+                </div>
+
+                <div style="overflow-y: scroll;">
+                    <table style="border-collapse: collapse; width: 100%; position: relative;">
+                        <tr class="orderBorder">
+                            <td class="orderBorder" id="tOrderID" style="width: 24%; user-select: none;">Order ID<span
+                                    style="float: right;">=</span></td>
+                            <td class="orderBorder" id="tDate" style="width: 24%; user-select: none;">Date</td>
+                            <td class="orderBorder" id="tTime" style="width: 24%; user-select: none;">Time</td>
+                            <td class="orderBorder" id="tTotalPrice" style="width: 24%; user-select: none;">Total
+                                Price(RM)<span style="float: right;">=</span></td>
+                            <td class="orderBorder" style="width: 4%;"></td>
+                        <tr>
+                    </table>
+                </div>
+
+                <div style="overflow-y: scroll; overflow-x: hidden; height: 80%;">
+                    <table id="listOrder" style="border-collapse: collapse; width: 100%; position: relative;">
+                    </table>
+                </div>
+
+                <div style="margin: 10px;">
+                    <div id="listPrev" style="float: left; font-size: 40px; user-select: none;">&lt;</div>
+                    <div id="listNext" style="float: right; font-size: 40px; user-select: none;">&gt;</div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -169,6 +192,21 @@
 <script>
 
     var loading;
+    var sortType = 'orderID';
+    var currentAt, limitAt, listBottom, lastTop;
+    var listTop = '0000001';
+    var sLimit = 10;
+
+    //Auto refresh staff status
+    var currentdate = new Date();
+    var date = currentdate.getFullYear() + "/"
+        + (currentdate.getMonth() + 1) + "/"
+        + currentdate.getDate();
+
+    //assign default month and day
+    document.getElementById("sYear").value = currentdate.getFullYear();
+    document.getElementById("sMonth").value = currentdate.getMonth() + 1;
+    document.getElementById("sDay").value = currentdate.getDate();
 
     //Start up
     window.onload = function () {
@@ -219,12 +257,16 @@
 </script>
 
 <script type="module">
+
+    currentAt = startAfter(listTop);
+    limitAt = limitToFirst(sLimit);
+
     // Import the functions you need from the SDKs you need
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
 
     //createUserWithEmailAndPassword
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
-    import { getDatabase, set, ref, update, onValue, query, orderByChild, orderByKey } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+    import { getDatabase, get, set, ref, child, update, onValue, query, orderByChild, orderByKey, limitToFirst, limitToLast, startAt, startAfter, endBefore } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
 
     // TODO: Add SDKs for Firebase products that you want to use
     // https://firebase.google.com/docs/web/setup#available-libraries
@@ -265,12 +307,6 @@
         }
     });
 
-    //Auto refresh staff status
-    var currentdate = new Date();
-    var date = currentdate.getFullYear() + "/"
-        + (currentdate.getMonth() + 1) + "/"
-        + currentdate.getDate();
-
     onValue(ref(database, 'staffcode/' + sessionStorage.getItem('staffCode') + '/attendance/' + date), (snapshot) => {
         if (snapshot.exists()) {
             //Find unfinish clock-in - Active
@@ -289,43 +325,88 @@
     });
 
     //Default list order sorting
-    sortOrder('date');
+    sortOrder();
 
     //Event listener for sorting
-    tDate.addEventListener('click', (e) => {
-        sortOrder('date');
-    });
-
-    tTime.addEventListener('click', (e) => {
-        sortOrder('time');
-    });
-
     tOrderID.addEventListener('click', (e) => {
-        sortOrder('orderID');
+        listTop = '0000001';
+        sortType = 'orderID';
+        sortOrder();
     });
 
     tTotalPrice.addEventListener('click', (e) => {
-        sortOrder('totalPrice');
+        listTop = 0;
+        sortType = 'totalPrice';
+        sortOrder();
     });
 
-    function sortOrder(sortType) {
+    //sortLimit input
+    sortLimit.addEventListener('focusout', (e) => {
+        sortOrder();
+    })
 
-        var cDate, cTime, cOrderID, cTotalPrice;
+    //sortDate input
+    sYear.addEventListener('focusout', (e) => {
+        listTop = '0000001';
+        sortOrder();
+    })
+
+    sMonth.addEventListener('focusout', (e) => {
+        listTop = '0000001';
+        sortOrder();
+    })
+
+    sDay.addEventListener('focusout', (e) => {
+        listTop = '0000001';
+        sortOrder();
+    })
+
+    //list next
+    listNext.addEventListener('click', (e) => {
+        currentAt = startAfter(listBottom);
+        sortOrder('next');
+    })
+
+    //list prev
+    listPrev.addEventListener('click', (e) => {
+        currentAt = endBefore(listTop);
+        sortOrder('prev');
+    })
+
+    function sortOrder(direction) {
+
+        var cOrderID, cDate, cTime, cTotalPrice;
+        var orderBy;
+
+        //Retrieve input sort limt
+        sLimit = +document.getElementById("sortLimit").value;
+
+        if (direction == 'next') {
+            limitAt = limitToFirst(sLimit);
+        } else if (direction == 'prev') {
+            limitAt = limitToLast(sLimit);
+        } else {
+            //Refresh limit, starting at top index to limit
+            limitAt = limitToFirst(+document.getElementById("sortLimit").value);
+            currentAt = startAt(listTop);
+        }
+
+        //Retrieve nput date sorting value
+        if (document.getElementById("sDay").value == "-") {
+
+        } else {
+            var sDate = document.getElementById("sYear").value + "/" + document.getElementById("sMonth").value + "/" + document.getElementById("sDay").value;
+        }
+
         switch (sortType) {
-            case 'date':
-                cDate = 'rgb(245, 245, 245)';
-                break;
-
-            case 'time':
-                cTime = 'rgb(245, 245, 245)';
-                break;
-
             case 'orderID':
                 cOrderID = 'rgb(245, 245, 245)';
+                orderBy = orderByKey();
                 break;
 
             case 'totalPrice':
                 cTotalPrice = 'rgb(245, 245, 245)';
+                orderBy = orderByChild(sortType);
                 break;
 
             default:
@@ -334,50 +415,91 @@
         }
 
         //Sorting interaction
-        document.getElementById('tDate').style.backgroundColor = '';
-        document.getElementById('tTime').style.backgroundColor = '';
         document.getElementById('tOrderID').style.backgroundColor = '';
+        document.getElementById('tOrderID').childNodes[1].innerHTML = '=';
         document.getElementById('tTotalPrice').style.backgroundColor = '';
+        document.getElementById('tTotalPrice').childNodes[1].innerHTML = '=';
 
         document.getElementById("t" + sortType.charAt(0).toUpperCase() + sortType.slice(1)).style.backgroundColor = 'rgb(245, 245, 245)';
+        //Changing sorting symbol "=" & "V"
+        document.getElementById("t" + sortType.charAt(0).toUpperCase() + sortType.slice(1)).childNodes[1].innerHTML = 'v';
 
-        function updateList(childSnapshot) {
-            document.getElementById('listOrder').innerHTML += `
-                <tr class="orderBorder">
-                    <td class="orderBorder" style="width: 24%; background-color: ${cDate}">${childSnapshot.val().date}</td>
-                    <td class="orderBorder" style="width: 24%; background-color: ${cTime}">${childSnapshot.val().time}</td>
-                    <td class="orderBorder" style="width: 24%; background-color: ${cOrderID}">${childSnapshot.key}</td>
-                    <td class="orderBorder" style="width: 24%; background-color: ${cTotalPrice}">${childSnapshot.val().totalPrice.toFixed(2)}</td>
-                    <td class="orderBorder" style="width: 4%; text-align: center;"><img src="png/refund_small.png" style="width: 22px;"></td>
-                <tr>
-            `;
-        }
+        var resetList = false;
+        var index;
 
-        if (sortType == 'orderID') {
-            //Reset list
-            document.getElementById('listOrder').innerHTML = '';
+        //Get list of order
+        onValue(query(ref(database, 'staffcode/' + sessionStorage.getItem('staffCode') + '/order/' + sDate), orderBy, limitAt, currentAt), (snapshot) => {
 
-            //Get list of order
-            onValue(query(ref(database, 'staffcode/' + sessionStorage.getItem('staffCode') + '/order/'), orderByKey()), (snapshot) => {
+            if (snapshot.exists()) {
+
+                if (resetList == false) {
+                    //Reset list
+                    document.getElementById('listOrder').innerHTML = '';
+                    resetList = true;
+                }
+
+                index = 0;
+                //Order list
                 snapshot.forEach((childSnapshot) => {
-                    updateList(childSnapshot);
-                })
-            }, {
-                onlyOnce: true
-            });
-        } else {
-            //Reset list
-            document.getElementById('listOrder').innerHTML = '';
 
-            //Get list of order
-            onValue(query(ref(database, 'staffcode/' + sessionStorage.getItem('staffCode') + '/order/'), orderByChild(sortType)), (snapshot) => {
-                snapshot.forEach((childSnapshot) => {
-                    updateList(childSnapshot);
+                    //Update List function, private functon
+                    document.getElementById('listOrder').innerHTML += `
+                        <tr class="orderBorder">
+                            <td class="orderBorder" style="width: 24%; background-color: ${cOrderID}">${childSnapshot.key}</td>
+                            <td class="orderBorder" style="width: 24%; background-color: ${cDate}">${childSnapshot.ref._path.pieces_[3] + '/' + childSnapshot.ref._path.pieces_[4] + '/' + childSnapshot.ref._path.pieces_[5]}</td>
+                            <td class="orderBorder" style="width: 24%; background-color: ${cTime}">${childSnapshot.val().time}</td>
+                            <td class="orderBorder" style="width: 24%; background-color: ${cTotalPrice}">${childSnapshot.val().totalPrice.toFixed(2)}</td>
+                            <td class="orderBorder" id="refund_${childSnapshot.key}" style="width: 4%; text-align: center;"><img src="png/refund_small.png" style="width: 22px;"></td>
+                        <tr>
+                    `;
+
+                    if (childSnapshot.val().refund == true) {
+                        document.getElementById('listOrder').innerHTML += `
+                            <div style="position: absolute; outline: 1px solid gray; height: 0%; width: 100%; transform: translate(0%, -15px);"><div>
+                        `;
+                    } else {
+                        setTimeout(() => {
+                            document.getElementById("refund_" + childSnapshot.key).addEventListener('click', (e) => {
+                                // console.log('refund ' + childSnapshot.key + ' time:' + sDate);
+                                update(ref(database, 'staffcode/' + sessionStorage.getItem('staffCode') + '/order/' + sDate + '/' + childSnapshot.key), {
+                                    refund: true
+                                })
+                                sortOrder();
+                            });
+                        }, 1);
+                    }
+
+
+                    switch (sortType) {
+                        case 'orderID':
+                            if (index == 0) {
+                                listTop = childSnapshot.key;
+                            }
+                            listBottom = childSnapshot.key;
+                            break;
+
+                        case 'totalPrice':
+                            if (index == 0) {
+                                listTop = childSnapshot.val().totalPrice;
+                            }
+                            listBottom = childSnapshot.val().totalPrice - 1;
+                            break;
+
+                        default:
+                            console.log("Error!");
+                            break;
+                    }
+
+                    index++;
                 })
-            }, {
-                onlyOnce: true
-            });
-        }
+
+            } else {
+                console.log('Data is ended.');
+            }
+
+        }, {
+            onlyOnce: true
+        });
 
     }
 

@@ -123,12 +123,6 @@
                 </div>
                 <table id="orderList"
                     style="border-collapse: collapse; width: 100%; position: relative; margin-top: 30px;">
-                    <tr class="orderBorder">
-                        <td class="orderBorder" style="width: 28px;"></td>
-                        <td class="orderBorder">Name</td>
-                        <td class="orderBorder" style="width: 100px;">Category</td>
-                        <td class="orderBorder" style="width: 100px;">Price(RM)</td>
-                    <tr>
                 </table>
             </div>
 
@@ -226,32 +220,7 @@
                 clearInterval(loading);
             }, 3000);
 
-            var order = JSON.parse(sessionStorage.getItem("order"));
-
-            for (var i = 0; i < order.length; i++) {
-                var name = order[i][0];
-                var price = order[i][1].toFixed(2);
-                var category = order[i][2];
-                totalPrice += order[i][1];
-
-                document.getElementById('orderList').innerHTML += `
-                    <tr class="orderBorder">
-                        <td class="orderBorder">${i + 1}.</td>
-                        <td class="orderBorder">${name}</td>
-                        <td class="orderBorder">${category}</td>
-                        <td class="orderBorder" style="text-align: right;">${price}</td>
-                    </tr>
-                `;
-            }
-
-            document.getElementById('orderList').innerHTML += `
-                <tr class="orderBorder">
-                    <td class="orderBorder" colspan="3" style="text-align: right;">Total</td>
-                    <td class="orderBorder" style="text-align: right;">${totalPrice.toFixed(2)}</td>
-                </tr>
-            `;
-
-            document.getElementById('totalPrice').innerHTML = totalPrice.toFixed(2);
+            refreshOrder();
 
         } else {
 
@@ -266,6 +235,59 @@
                 </div>
             `;
         }
+
+    }
+
+    //remove item from order
+    function removeOrder(index) {
+        var order = JSON.parse(sessionStorage.getItem("order"));
+        order.splice(index, 1);
+        sessionStorage.setItem("order", JSON.stringify(order));
+        refreshOrder();
+    }
+
+    //refresh order
+    function refreshOrder() {
+
+        //reset Total Price
+        totalPrice = 0;
+
+        //Clear current orderList display
+        document.getElementById('orderList').innerHTML = `
+            <tr class="orderBorder">
+                <td class="orderBorder" style="width: 28px;"></td>
+                <td class="orderBorder">Name</td>
+                <td class="orderBorder" style="width: 100px;">Category</td>
+                <td class="orderBorder" style="width: 100px;">Price(RM)</td>
+            <tr>
+        `;
+
+        var order = JSON.parse(sessionStorage.getItem("order"));
+        for (var i = 0; i < order.length; i++) {
+            var name = order[i][0];
+            var price = order[i][1].toFixed(2);
+            var category = order[i][2];
+            totalPrice += order[i][1];
+
+            document.getElementById('orderList').innerHTML += `
+                <tr class="orderBorder">
+                    <td class="orderBorder">${i + 1}.</td>
+                    <td class="orderBorder">${name}</td>
+                    <td class="orderBorder">${category}</td>
+                    <td class="orderBorder" style="text-align: right;">${price}</td>
+                    <td class="orderBorder" style="user-select: none; width: 20px; font-family: Arial, sans-serif; color: red; text-align: center;" onclick="removeOrder(${i});">x</td>
+                </tr>
+            `;
+        }
+
+        document.getElementById('orderList').innerHTML += `
+                <tr class="orderBorder">
+                    <td class="orderBorder" colspan="3" style="text-align: right;">Total</td>
+                    <td class="orderBorder" style="text-align: right;">${totalPrice.toFixed(2)}</td>
+                </tr>
+            `;
+
+        document.getElementById('totalPrice').innerHTML = totalPrice.toFixed(2);
 
     }
 
@@ -380,8 +402,7 @@
             + ((currentdate.getSeconds() / 10 >= 1) ? currentdate.getSeconds() : "0" + currentdate.getSeconds());
 
         //Upload order data
-        set(ref(database, 'staffcode/' + sessionStorage.getItem('staffCode') + '/order/' + oID), {
-            date: date,
+        set(ref(database, 'staffcode/' + sessionStorage.getItem('staffCode') + '/order/' + date + '/' + oID), {
             orderList: sessionStorage.getItem("order"),
             time: time,
             totalPrice: totalPrice
