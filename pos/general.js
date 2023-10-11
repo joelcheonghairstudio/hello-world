@@ -60,4 +60,6 @@ function logout() {
     }
 }
 
-document.getElementById("logoutBtn").addEventListener("click", logout());
+setTimeout(() => {
+    document.getElementById("logoutBtn").addEventListener("click", logout());
+}, 1);
