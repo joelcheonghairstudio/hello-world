@@ -51,7 +51,7 @@ window.onload = function () {
 
 }
 
-function logout() {
+export function logout() {
     //Clear session storage *temp
     var user = sessionStorage.getItem("user");
     if (user) {
