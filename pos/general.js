@@ -51,7 +51,7 @@ window.onload = function () {
 
 }
 
-export function logout() {
+function logout() {
     //Clear session storage *temp
     var user = sessionStorage.getItem("user");
     if (user) {
@@ -59,3 +59,5 @@ export function logout() {
         window.location.href = "login.html";
     }
 }
+
+document.getElementById("logoutBtn").addEventListener("click", logout());
