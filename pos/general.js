@@ -1,7 +1,6 @@
-$(function () {
-    var includes = $('[data-include]')
-    $.each(includes, function () {
-        var file = 'views/' + $(this).data('include') + '.html'
-        $(this).load(file)
-    })
+const nav = document.querySelector('.menu_import')
+fetch("/menu.html")
+.then(res=>res.text())
+.then(data=>{
+    nav.innerHTML=data
 })
