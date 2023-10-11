@@ -3,4 +3,4 @@ fetch("https://joelcheonghairstudio.github.io/pos/menu.html")
     .then(res => res.text())
     .then(data => {
         nav.innerHTML = data
-    });
+    })
