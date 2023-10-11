@@ -1,0 +1,46 @@
+<div id="menu"
+    style="width: 70px; height: 100vh; background-image: linear-gradient(rgb(240, 240, 240), lightgray); top: 50%; left: calc(2.1% - 10px); position: absolute; transform: translate(0%, -50%);">
+    <div style="top: 50%; position: relative; transform: translate(0%, -50%);">
+        <div class="menuSlot active">
+            <div style="height: 6px;"></div>
+            <div style="height: 8px; background-color: rgb(54, 54, 54); width: 50px;"></div>
+            <div style="height: 10px;"></div>
+            <div style="height: 8px; background-color: rgb(54, 54, 54); width: 50px;"></div>
+            <div style="height: 10px;"></div>
+            <div style="height: 8px; background-color: rgb(54, 54, 54); width: 50px;"></div>
+            <div style="height: 6px;"></div>
+        </div>
+        <div class="menuSlot active" onclick="window.location.href = 'main.html';">
+            <img src="png/home.png" style="width: 50px;" />
+        </div>
+        <div class="menuSlot active" onclick="window.location.href = 'attendance.html';">
+            <img src="png/attendance.png" style="width: 50px;" />
+        </div>
+        <div class="menuSlot active" onclick="window.location.href = 'cash_record.html';">
+            <img src="png/money_bag.png" style="width: 50px;" />
+        </div>
+        <div class="menuSlot active" onclick="window.location.href = 'refund.html';">
+            <img src="png/refund.png" style="width: 50px;" />
+        </div>
+        <div class="menuSlot">
+
+        </div>
+        <div class="menuSlot">
+
+        </div>
+        <div class="menuSlot">
+
+        </div>
+        <div class="menuSlot active" onclick="logout()">
+            <img src="png/logout.png" style="width: 50px;" />
+        </div>
+    </div>
+</div>
+
+<div id="detail">
+    <div id="Title" class="detail" style="font-size: 50px; left: 10.5%;">HOME</div>
+    <div class="detail" style="position: absolute; z-index: 3; right: 30px; white-space: nowrap;">
+        <div id="accStatus" style="position: absolute;"></div>
+        <div id="Account" style="z-index: 3; font-size: 20px; position: relative;">[Account]</div>
+    </div>
+</div>
